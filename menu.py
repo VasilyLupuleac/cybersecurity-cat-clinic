@@ -40,7 +40,7 @@ def main():
     menu_items = dict(enumerate(function_names, start=1))
 
     while True:
-        print("Welcome to Cat Clinic meoooooooooooow :3")
+        print("Welcome to Cat Clinic meooooooooooow :3")
         print("""1. View messages
 2. Book an appointment
 3. Logout""")
