@@ -1,4 +1,5 @@
 from http.server import HTTPServer, BaseHTTPRequestHandler
+from .passwordStorage import DictPasswordStorage
 
 
 class CustomHTTPRequestHandler(BaseHTTPRequestHandler):
@@ -28,6 +29,7 @@ class CustomHTTPRequestHandler(BaseHTTPRequestHandler):
             self.end_headers()
 
 
+userStorage = DictPasswordStorage()
 PORT = 1642
 server = HTTPServer(('localhost', PORT), CustomHTTPRequestHandler)
 print(f'Server running on port {PORT}...')
