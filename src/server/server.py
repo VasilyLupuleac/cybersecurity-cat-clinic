@@ -1,5 +1,7 @@
 from http.server import HTTPServer, BaseHTTPRequestHandler
-from .passwordStorage import DictPasswordStorage
+from passwordStorage import DictPasswordStorage
+from urllib.parse import parse_qs
+import os
 
 
 class CustomHTTPRequestHandler(BaseHTTPRequestHandler):
@@ -9,9 +11,22 @@ class CustomHTTPRequestHandler(BaseHTTPRequestHandler):
             self.send_response(200)
             self.end_headers()
             self.wfile.write(b'Welcome to the clinic!')
+        
         elif page == 'messages':
             self.send_response(403)
             self.end_headers()
+        
+        elif page == 'register.html':
+            self.send_response(200)
+            current_dir = os.path.dirname(os.path.realpath(__file__))
+            file_path = os.path.join(current_dir, 'register.html')
+
+            with open(file_path,'rb') as file:
+                html_content = file.read()
+            self.send_header('Content-type', 'text/html')
+            self.end_headers()
+            self.wfile.write(html_content)
+        
         else:
             self.send_response(404)
             self.end_headers()
@@ -24,9 +39,22 @@ class CustomHTTPRequestHandler(BaseHTTPRequestHandler):
             self.send_response(200)
             self.end_headers()
             self.wfile.write(b'Not implemented')
+        
+
+        elif page == 'register':
+            content_length = int(self.headers['Content-Length'])
+            post_data = self.rfile.read(content_length).decode('utf-8')
+            params = parse_qs(post_data)
+            username = params['username'][0]
+            password = params['password'][0]
+            print(username,"----------------",password)
+
+
         else:
             self.send_response(404)
             self.end_headers()
+
+        
 
 
 userStorage = DictPasswordStorage()
