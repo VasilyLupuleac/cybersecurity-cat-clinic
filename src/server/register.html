@@ -1,18 +1,42 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registration Form</title>
-</head>
-<body>
-    <h2>Registration Form</h2>
-    <form action="/register" method="post">
-        <label for="username">Username:</label><br>
-        <input type="text" id="username" name="username"><br>
-        <label for="password">Password:</label><br>
-        <input type="password" id="password" name="password"><br><br>
-        <input type="submit" value="Register">
-    </form>
-</body>
-</html>
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Registration Form</title>
+    </head>
+    <body>
+        <h2>Registration Form</h2>
+        <form id="registrationForm">
+            <label for="username">Username:</label><br>
+            <input type="text" id="username" name="username"><br>
+            <label for="password">Password:</label><br>
+            <input type="password" id="password" name="password"><br><br>
+            <label for="confirmPassword">Confirm Password:</label><br>
+            <input type="password" id="confirmPwd" name="confirmPwd"><br><br>
+            <input type="submit" value="Register">
+        </form>
+
+        <script>
+            document.getElementById('registrationForm').addEventListener('submit', function(event) {
+                event.preventDefault(); // Prevent the default form submission
+                const formData = new FormData();
+                formData.append('username', document.getElementById('username').value);
+                formData.append('password', document.getElementById('password').value);
+                formData.append('confirmPwd', document.getElementById('confirmPwd').value);
+                // Send the form data to the server
+                fetch('/register', {
+                    method: 'POST',
+                    body: formData
+                }).then(response => {
+                    // Handle response if needed
+                    console.log(response);
+                }).catch(error => {
+                    // Handle error if needed
+                    console.error('Error:', error);
+                });
+            });
+        </script>
+        
+    </body>
+    </html>
