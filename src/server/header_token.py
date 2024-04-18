@@ -18,21 +18,18 @@ def make_token(username):
     return token
 
 
-t = make_token('admin')
-
-
 def check_token(token):
     try:
-        payload = jwt.decode(t, key=secret, algorithms="HS256")
+        payload = jwt.decode(token, key=secret, algorithms="HS256")
         user = payload['user']
         rights = payload['rights']
         expiration = payload['expiration']
         if datetime.now().timestamp() > expiration:
             return False
         return user, rights
-    except jwt.exceptions.InvalidSignatureError:
+    except Exception:
         # print('Invalid signature')
         return False
 
 
-check_token(make_token('admin'))
+print(make_token('admin'))
