@@ -2,7 +2,7 @@ import hashlib
 
 
 def hash_password(password):
-    return hashlib.sha256(password.encode())
+    return hashlib.sha256(password.encode()).hexdigest()
 
 
 class DictPasswordStorage:

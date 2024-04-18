@@ -1,5 +1,6 @@
 from http.server import HTTPServer, BaseHTTPRequestHandler
-from passwordStorage import DictPasswordStorage,hash_password
+from passwordStorage import DictPasswordStorage, hash_password
+from header_token import make_token, check_token
 import os
 import cgi
 
@@ -43,11 +44,21 @@ class CustomHTTPRequestHandler(BaseHTTPRequestHandler):
         page = self.path.split('/')[1]
         print(f"Received POST request for page: {page}")
         if page == 'login':
-            # TODO check login
-            # TODO set headers
+
+            form_data = cgi.FieldStorage(fp=self.rfile, headers=self.headers, environ={'REQUEST_METHOD': 'POST'})
+            username = form_data.getvalue('username').strip()
+            password = form_data.getvalue('password').strip()
+            user_exists = userStorage.check(username, password)
+            if not user_exists:
+                self.send_response(200) # TODO change
+                self.end_headers()
+                print('Please check provided information') # TODO change to HTML page
+                return
+            token = make_token(username)
+            self.send_header('Authorization', f'Bearer {token}')
             self.send_response(200)
             self.end_headers()
-            self.wfile.write(b'Not implemented')
+            print('Logged in!') # TODO change
 
         elif page == 'register':
             content_type, _ = cgi.parse_header(self.headers['Content-Type'])
@@ -67,7 +78,7 @@ class CustomHTTPRequestHandler(BaseHTTPRequestHandler):
                     print("User Added Successfully")
                     
                     # After successful user registration
-                    
+
                     self.send_response(200)  # Found (redirect)
                     self.send_header('Location', '/register?success=true')  # Redirect to registration page with success query parameter
                     self.end_headers()
