@@ -5,20 +5,28 @@ from http.server import HTTPServer, BaseHTTPRequestHandler
 from header_token import make_token, check_token
 from passwordStorage import DictPasswordStorage
 
+access_rights = {'admin': ['home'],
+                 'user': ['home']}  # TODO add more
+
 
 class CustomHTTPRequestHandler(BaseHTTPRequestHandler):
-    def check_auth(self):
+    def check_auth(self, page):
         bearer = self.headers.get('Authorization', '')
         if not bearer.startswith('Bearer '):
             return False
         token = bearer[len('Bearer '):]
-        return check_token(token)
-
+        result = check_token(token)
+        if not result:
+            return False
+        user, rights = result
+        if page not in access_rights[rights]:
+            return False
+        return result
 
     def do_GET(self):
         page = self.path.split('/')[1]
         if page == 'home':
-            result = self.check_auth()
+            result = self.check_auth(page)
             if not result:
                 self.send_response(401)
                 self.end_headers()
