@@ -1,5 +1,5 @@
 from http.server import HTTPServer, BaseHTTPRequestHandler
-from passwordStorage import DictPasswordStorage,hash_password
+from passwordStorage import DictPasswordStorage,hash_password, PasswordDB
 import os
 import cgi
 
@@ -33,6 +33,7 @@ class CustomHTTPRequestHandler(BaseHTTPRequestHandler):
             self.send_header('Content-type', 'text/html')
             self.end_headers()
             self.wfile.write(html_content)
+
         
         else:
             self.send_response(404)
@@ -86,8 +87,9 @@ class CustomHTTPRequestHandler(BaseHTTPRequestHandler):
 
 
 
-userStorage = DictPasswordStorage()
+userStorage = PasswordDB()
 PORT = 1642
 server = HTTPServer(('localhost', PORT), CustomHTTPRequestHandler)
 print(f'Server running on port {PORT}...')
+"userStorage.add("b", "b")"
 server.serve_forever()
