@@ -34,4 +34,4 @@ def check_token(token):
         return False
 
 
-print(make_token('admin'))
+#print(make_token('admin'))
