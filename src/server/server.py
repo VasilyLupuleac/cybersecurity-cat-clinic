@@ -1,5 +1,6 @@
 import cgi
 import os
+import ssl
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
 from header_token import make_token, check_token
@@ -124,5 +125,14 @@ class CustomHTTPRequestHandler(BaseHTTPRequestHandler):
 userStorage = DictPasswordStorage()
 PORT = 1642
 server = HTTPServer(('localhost', PORT), CustomHTTPRequestHandler)
+context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+with open('pass.txt', 'r') as pass_file:
+    password = pass_file.readline().strip()
+context.load_cert_chain(keyfile='key.pem',
+                        certfile='cert.pem',
+                        password=password)
+context.check_hostname = False
+
+server.socket = context.wrap_socket(server.socket, server_side=True)
 print(f'Server running on port {PORT}...')
 server.serve_forever()
