@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Registration Form</title>
     <link rel="stylesheet" href="style.css">
     <style>
         body {
             font-family: Arial, sans-serif;
-            background: url("1.jpg");
+            background: url("1.jpg") no-repeat center center fixed;
+            background-size: cover;
             margin: 0;
             padding: 0;
             height: 100%;
@@ -22,8 +23,8 @@
             height: 100vh;
         }
 
-        .login-box {
-            background-color: #fff;
+        .registration-box {
+            background-color: rgba(255, 255, 255, 0.8);
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             padding: 30px;
@@ -68,9 +69,9 @@
 </head>
 <body>
     <div class="container">
-        <div class="login-box">
-            <h2>Login</h2>
-            <form id="login" action="/login" method="POST">
+        <div class="registration-box">
+            <h2>Registration Form</h2>
+            <form id="registrationForm">
                 <div class="form-group">
                     <label for="username">Username:</label>
                     <input type="text" id="username" name="username">
@@ -80,28 +81,43 @@
                     <input type="password" id="password" name="password">
                 </div>
                 <div class="form-group">
-                    <input type="submit" value="Login">
+                    <label for="confirmPassword">Confirm Password:</label>
+                    <input type="password" id="confirmPwd" name="confirmPwd">
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Register">
                 </div>
             </form>
         </div>
     </div>
 
     <script>
-        document.getElementById('login').addEventListener('submit', function(event) {
+        document.getElementById('registrationForm').addEventListener('submit', function(event) {
             event.preventDefault(); // Prevent the default form submission
             const formData = new FormData();
             formData.append('username', document.getElementById('username').value);
             formData.append('password', document.getElementById('password').value);
+            formData.append('confirmPwd', document.getElementById('confirmPwd').value);
             // Send the form data to the server
-            fetch('/login', {
+            fetch('/register', {
                 method: 'POST',
                 body: formData
             }).then(response => {
-                // Handle response if needed
-                console.log(response);
+                // Check if registration was successful
+                if (response.ok) {
+                    // Redirect to login page after successful registration
+                    window.location.href = '/login';
+                } else {
+                    // Handle registration failure
+                    console.error('Registration failed:', response.statusText);
+                    // Optionally, display an error message to the user
+                    alert('Registration failed. Please try again.');
+                }
             }).catch(error => {
-                // Handle error if needed
+                // Handle network errors
                 console.error('Error:', error);
+                // Optionally, display an error message to the user
+                alert('Network error. Please try again later.');
             });
         });
     </script>
