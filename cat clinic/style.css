@@ -13,10 +13,10 @@
 }
 
 .navbar{
-    width: 1800px;
+    width: 100%;
     height: 75px;
     margin: auto;
-    
+    position: relative;
 }
 
 .icon{
@@ -26,19 +26,18 @@
 }
 
 .logo{
-    color: #f06ba9;
+    color: #e91578;
     font-size: 37px;
     font-family: Arial;
     padding-left: 20px;
     float: left;
-    padding-top: 100px;
+    padding-top: 15px;
 }
 
 .menu{
-    width: 400px;
+    width: 800px;
     float: left;
     height: 70px;
-    padding-top: 90px;
 }
 
 ul{
@@ -46,91 +45,70 @@ ul{
     display: flex;
     justify-content: center;
     align-items: center;
+    height: 100%;
 }
 
 ul li{
     list-style: none;
     margin-left: 62px;
-    margin-top: 27px;
     font-size: 14px;
 }
 
 ul li a{
     text-decoration: none;
-    color : #f190c6;
+    color : #db549e;
     font-family: Arial;
     font-weight: bold;
     transition: 0.4s ease-in-out;
 }
 
 ul li a:hover{
-    color: #f06ba9;
+    color: #e91578;
 }
 
-.search-container {
-    display: flex;
-    justify-content: flex-end;
-    width: 300px;
-    float: right;
-    margin-top: 13px;
-    padding-top: 90px;
-}
 
-.srch{
+
+.logout{
     font-family: 'Times New Roman';
-    width: 200px;
     height: 40px;
     background: transparent;
-    border: 1px solid #f06ba9;
-    margin-top: 90px;
-    color: #f190c6;
-    border-right: none;
+    border: 1px solid #e91578;
+    color: #e91578;
     font-size: 16px;
-    float: left;
     padding: 10px;
     border-bottom-left-radius: 5px;
     border-top-left-radius: 5px;
-    position: absolute;
-    right: 0;
-    margin-right: 100px;
-    
-    
+    margin-right: 20px;
+    transition: 0.4s ease-in-out;
 }
 
 .btn{
-    width: 100px;
     height: 40px;
-    background: #f06ba9;
-    border: 2px solid #f06ba9;
-    margin-top: 90px;
+    background: #e91578;
+    border: 2px solid #e91578;
     color: #ffffff;
     font-size: 15px;
-    float: left;
     border-bottom-right-radius: 5px;
     border-top-right-radius: 5px;
-    position: absolute;
-    right: 0;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
     margin-right: 20px;
-    
+
 }
 
-.btn:focus{
+.btn:focus, .logout:focus{
     outline: none;
 }
 
-.srch:focus{
-    outline: none;
+.btn:hover {
+    background-color: #f06ba9; 
 }
 
 .content{
-    width: 1800px;
-    height: auto;
+    width: 100%;
     font-size: 20px;
-    margin: auto;
     margin-top: 150px;
-    color: #f190c6;
-    position: left;
-    float: left;
+    color: #e91578;
 }
 
 .content .par{
@@ -152,7 +130,7 @@ ul li a:hover{
 .content .cn{
     width: 160px;
     height: 40px;
-    background: #f06ba9;
+    background: #e91578;
     border: none;
     margin-bottom: 10px;
     margin-left: 20px;
@@ -170,4 +148,158 @@ ul li a:hover{
 
 .cn:hover{
     background-color: #f06ba9;
+}
+
+.user-tab{
+    margin-right: 20px;
+}
+
+.greeting {
+    font-family: 'Times New Roman';
+    width: 120px;
+    height: 40px;
+    border: 2px solid #e91578;
+    color: #e91578;
+    font-size: 16px;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.logout-btn:focus {
+    outline: none;
+}
+
+.newnavbar {
+    width: 100%;
+    height: auto;
+    margin: auto;
+    display: flex;
+    align-items: center;
+}
+
+.newicon {
+    width: 200px;
+}
+
+.newlogo {
+    color: #e91578;
+    font-size: 37px;
+    font-family: Arial;
+    padding-left: 20px;
+    margin-top: 20px;
+}
+
+.newmenu {
+    flex: 1;
+    padding-left: 20px;
+}
+
+.newmenu ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.newmenu ul li {
+    display: inline;
+    margin-top: 20px;
+    margin-right: 20px;
+}
+
+.newmenu ul li a {
+    text-decoration: none;
+    color: #e91578;
+    margin-top: 20px;
+    font-family: Arial;
+    font-weight: bold;
+    transition: 0.4s ease-in-out;
+}
+
+.newmenu ul li a:hover {
+    color: #db549e;
+}
+
+.newcontent {
+    width: 100%;
+    font-size: 30px;
+    margin-top: 150px;
+    color: #e91578;
+    text-align: left; 
+    margin-left: 20px;
+}
+
+
+.cn {
+    width: 120px;
+    height: 40px;
+    background: #e91578;
+    border: 2px solid #e91578;
+    color: #ffffff;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: .4s ease;
+    margin-top: 20px; 
+}
+
+.cn a {
+    text-decoration: none;
+    color: #ffffff;
+    transition: .3s ease;
+}
+
+.cn:hover {
+    background-color: #f06ba9;
+}
+.contact {
+    margin-top: 50px; 
+    margin-left: 20px;
+}
+
+.clinic-info h2 {
+    margin-left: 20px;
+    color: #e91578;
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.clinic-info p {
+    color: #e91578;
+    font-size: 16px;
+    margin-bottom: 5px;
+    margin-left: 20px;
+}
+
+.doctor h2 {
+    color: #e91578;
+    font-size: 24px;
+    margin-bottom: 20px;
+    margin-left: 20px;
+}
+
+.doctor-info {
+    color: #e91578;
+    margin-bottom: 30px;
+    margin-left: 20px;
+}
+
+.doctor-info h3 {
+    color: #e91578;
+    font-size: 20px;
+    margin-bottom: 5px;
+    margin-left: 20px;
+}
+
+.doctor-info p {
+    color: #e91578;
+    font-size: 16px;
+    margin-bottom: 10px;
+    margin-left: 20px;
+}
+
+.doctor-info img {
+    max-width: 5%;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    margin-left: 20px;
 }
