@@ -121,8 +121,9 @@ class CustomHTTPRequestHandler(BaseHTTPRequestHandler):
             self.end_headers()
 
 
-userStorage = DictPasswordStorage()
-PORT = 1642
-server = HTTPServer(('localhost', PORT), CustomHTTPRequestHandler)
-print(f'Server running on port {PORT}...')
-server.serve_forever()
+if __name__ == '__main__':
+    userStorage = DictPasswordStorage()
+    PORT = 1642
+    server = HTTPServer(('localhost', PORT), CustomHTTPRequestHandler)
+    print(f'Server running on port {PORT}...')
+    server.serve_forever()
