@@ -24,31 +24,37 @@ class doctorStorage():
                 specialty varchar(100) not null,
                 phone varchar(15);""", prepare=True)
 
-            #create table for available times
-            self.cursor.execute("""CREATE TABLE IF NOT EXISTS doctor_times(
+            #create table for taken times
+            self.cursor.execute("""CREATE TABLE IF NOT EXISTS reserved_times(
                 id serial not null PRIMARY KEY,
-                available timestamp not null);""", prepare=True)
+                taken timestamp not null);""", prepare=True)
 
             #join tables
             self.cursor.execute("""SELECT doctors.id
                                 FROM doctors
-                                JOIN doctor_times ON doctors.id = doctor_times.id;""", prepare=True)
+                                JOIN reserved_times ON doctors.id = reserved_times.id;""", prepare=True)
         except:
             pass
 
-    def addTime(self, doctor, new_time):
+    def reserveTime(self, doctor, new_time):
 
 
         #check if doctor exists
-        check_doc = (f"""SELECT * FROM doctors 
+        check_doc = (f"""SELECT id FROM doctors 
                     WHERE doc_name = '{doctor}';""")
-        result = self.cursor.execute(check_doc, prepare=True).fetchone()
-        if result is None:
+        doctor_id = self.cursor.execute(check_doc, prepare=True).fetchone()
+        if doctor_id is None:
+            return False
+        check_availability = (f"""SELECT reserved FROM reserved_times
+                                FROM doctors JOIN
+                                reserved_times ON doctors.id = reserved_times.id
+                                WHERE reserved = {new_time} AND doctors.name = {doctor};""")
+        if (self.cursor.execute(check_availability, prepare=True).fetchall()):
             return False
 
-        add_timeslot = (f"""INSERT INTO doctor_times VALUES(
-	                    id = (SELECT id FROM doctors WHERE name = '{name}'),
-	                    available = '{new_time}');""")
+        add_timeslot = (f"""INSERT INTO reserved_times VALUES(
+	                    id = (SELECT id FROM doctors WHERE name = '{doctor}'),
+	                    reserved = '{new_time}');""")
         self.cursor.execute(add_timeslot, prepare=True)
 
     def getTimes(self, doctor):
