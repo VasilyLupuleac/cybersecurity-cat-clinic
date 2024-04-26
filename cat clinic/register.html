@@ -1,8 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet"
+            href="pwdstyle.css" 
+            type="text/css" />
     <title>Registration Form</title>
     <link rel="stylesheet" href="style.css">
     <style>
@@ -67,6 +71,10 @@
         }
     </style>
 </head>
+
+
+
+
 <body>
     <div class="container">
         <div class="registration-box">
@@ -76,20 +84,36 @@
                     <label for="username">Username:</label>
                     <input type="text" id="username" name="username">
                 </div>
-                <div class="form-group">
-                    <label for="password">Password:</label>
-                    <input type="password" id="password" name="password">
+                <div class="group">
+                    <label for="">Password:</label> 
+                    <input type="password"
+                        id="password"
+                        oninput="displayPicture()"
+                        />
+                    <div class="power-container"> 
+                        <div id="power-point"></div> 
+                    </div> 
                 </div>
+                <br>
+                <div>
+                    <div id="catpic"></div>
+                </div>
+                <br>
+
                 <div class="form-group">
                     <label for="confirmPassword">Confirm Password:</label>
                     <input type="password" id="confirmPwd" name="confirmPwd">
                 </div>
+
                 <div class="form-group">
                     <input type="submit" value="Register">
                 </div>
             </form>
         </div>
     </div>
+
+
+  
 
     <script>
         document.getElementById('registrationForm').addEventListener('submit', function(event) {
@@ -120,6 +144,38 @@
                 alert('Network error. Please try again later.');
             });
         });
+
+        //password strength meter
+        let password = document.getElementById("password"); 
+        let power = document.getElementById("power-point"); 
+        password.oninput = function () { 
+            let point = 0; 
+            let value = password.value; 
+            let widthPower = 
+                ["1%", "25%", "50%", "75%", "100%"]; 
+            let colorPower = 
+                ["#D73F40", "#DC6551", "#F2B84F", "#BDE952", "#3ba62f"]; 
+            let pictureSource = 
+                ["pusheen_sad.jpg", "pusheen_sad.jpg", "pusheen_mid.jpg",
+                "pusheen_mid.jpg", "pusheen_happy.jpg"];
+
+            if (value.length >= 6) { 
+                let arrayTest = 
+                    [/[0-9]/, /[a-z]/, /[A-Z]/, /[^0-9a-zA-Z]/]; 
+                arrayTest.forEach((item) => { 
+                    if (item.test(value)) { 
+                        point += 1;
+                    } 
+                }); 
+            } 
+            power.style.width = widthPower[point]; 
+            power.style.backgroundColor = colorPower[point];
+            
+            document.getElementById("catpic").innerHTML = '<img src="' + pictureSource[point] + '" id="catpic"' +
+            'width="100" height="100"' + '/>';
+        
+           
+        };
     </script>
 </body>
 </html>
