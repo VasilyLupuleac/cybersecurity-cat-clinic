@@ -2,17 +2,13 @@ from datetime import datetime, timedelta
 
 import jwt
 
-access_rights = {'admin': 'admin'}  # TODO DB table with users
-
 secret = "Secret"  # TODO change
 
 
 def make_token(username):
-    rights = access_rights[username]
     expiration = datetime.now() + timedelta(hours=1)
     payload = {
         'user': username,
-        'rights': rights,
         'expiration': expiration.timestamp()
         # TODO more fields idk
     }
