@@ -98,7 +98,10 @@
                 body: formData
             }).then(response => {
                 // Handle response if needed
-                console.log(response);
+                if(response.ok) {
+                    sessionStorage.setItem('token', response.text());
+                    fetch()
+                }
             }).catch(error => {
                 // Handle error if needed
                 console.error('Error:', error);

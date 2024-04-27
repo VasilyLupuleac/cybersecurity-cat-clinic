@@ -2,6 +2,7 @@ import cgi
 import os
 import ssl
 from http.server import HTTPServer, BaseHTTPRequestHandler
+from http import cookies
 
 from header_token import make_token, check_token
 from passwordStorage import DictPasswordStorage
@@ -9,12 +10,14 @@ from passwordStorage import DictPasswordStorage
 
 storage = DictPasswordStorage
 
-
 class CatClinicRequestHandler(BaseHTTPRequestHandler):
     current_dir = os.path.dirname(os.path.realpath(__file__))
     parent_dir = os.path.join(current_dir, os.pardir)
     root = os.path.join(parent_dir, os.pardir)
     pages_dir = os.path.join(root, 'cat clinic')
+
+    def send_message(self):
+        pass
 
     def get_html(self, filename):
         file_path = os.path.join(CatClinicRequestHandler.pages_dir, filename)
@@ -23,18 +26,26 @@ class CatClinicRequestHandler(BaseHTTPRequestHandler):
         return html
 
     def check_auth(self):
-        bearer = self.headers.get('Authorization', '')
-        if not bearer.startswith('Bearer '):
+        return 'admin'
+        cookie_header = self.headers.get('Cookie')
+        if not cookie_header:
             return False
-        token = bearer[len('Bearer '):]
+
+        cookie = cookies.SimpleCookie(cookie_header)
+        token = cookie.get('session').value
         result = check_token(token)
         if not result:
             return False
-        user, rights = result  # TODO remove rights
+        user = result
         return user
 
     def do_GET(self):
         page = self.path.split('/')[1]
+        if page == '':
+            self.send_response(301)
+            self.send_header('Location', '/home')
+            self.end_headers()
+            return
         if page == 'home':
             result = self.check_auth()
             if not result:
@@ -60,13 +71,33 @@ class CatClinicRequestHandler(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(html_content)
 
-        elif page == 'appointment':
+        elif page == 'book':
             self.send_response(200)
             html_content = self.get_html('bookapp.html')
             self.send_header('Content-type', 'text/html')
             self.end_headers()
             self.wfile.write(html_content)
 
+        elif page == 'appointments':
+            self.send_response(200)
+            html_content = self.get_html('bookapp.html')
+            self.send_header('Content-type', 'text/html')
+            self.end_headers()
+            self.wfile.write(html_content)
+
+        elif page == 'logout':
+            result = self.check_auth()
+            if not result:
+                self.send_response(401)
+                self.end_headers()
+                self.wfile.write(b'Not logged in!')
+                return
+            # TODO invalidate token
+            self.send_response(200)
+            html_content = self.get_html('bookapp.html')
+            self.send_header('Content-type', 'text/html')
+            self.end_headers()
+            self.wfile.write(html_content)
         else:
             self.send_response(404)
             self.end_headers()
@@ -74,21 +105,22 @@ class CatClinicRequestHandler(BaseHTTPRequestHandler):
     def do_POST(self):
         page = self.path.split('/')[1]
         print(f"Received POST request for page: {page}")
+
         if page == 'login':
             form_data = cgi.FieldStorage(fp=self.rfile, headers=self.headers, environ={'REQUEST_METHOD': 'POST'})
             username = form_data.getvalue('username').strip()
             password = form_data.getvalue('password').strip()
             user_exists = storage.check(username, password)
             if not user_exists:
-                self.send_response(200)  # TODO change
+                self.send_response(403)  # TODO change
                 self.end_headers()
-                print('Please check provided information')  # TODO change to HTML page
+                self.send_message('Please check provided information')  # TODO change to HTML page
                 return
             token = make_token(username)
-            self.send_header('Authorization', f'Bearer {token}')
             self.send_response(200)
+            self.send_header('Content-type', 'text/plain')
+            self.wfile.write(token.encode('utf-8'))
             self.end_headers()
-            print('Logged in!')  # TODO change
 
         elif page == 'register':
             content_type, _ = cgi.parse_header(self.headers['Content-Type'])
@@ -106,11 +138,12 @@ class CatClinicRequestHandler(BaseHTTPRequestHandler):
                     # TODO adding user to the password storage and checking if the user already exist
                     if storage.add(username, password):
                         self.send_response(201)  # Created (redirect)
-                        self.send_header('Location',
-                                         '/login')  # Redirect to login page
+                        self.send_header('Location', '/login')  # Redirect to login page
                         self.end_headers()
                     else:
-                        self.send_response(200, 'User already exists') # TODO
+                        self.send_response(200)  # TODO
+                        self.send_message('User already exists')
+                        self.end_headers()
 
             else:
                 self.send_response(400)  # Bad request
