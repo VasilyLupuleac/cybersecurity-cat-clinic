@@ -32,12 +32,9 @@ class CatClinicRequestHandler(BaseHTTPRequestHandler):
             return False
 
         cookie = cookies.SimpleCookie(cookie_header)
-        token = cookie.get('session').value
-        result = check_token(token)
-        if not result:
-            return False
-        user = result
-        return user
+        token = cookie.get('auth').value
+        return check_token(token)
+
 
     def do_GET(self):
         page = self.path.split('/')[1]
@@ -117,9 +114,13 @@ class CatClinicRequestHandler(BaseHTTPRequestHandler):
                 self.send_message('Please check provided information')  # TODO change to HTML page
                 return
             token = make_token(username)
+            cookie = cookies.SimpleCookie()
+            cookie_name = 'auth'
+            cookie[cookie_name] = token
+            cookie[cookie_name]['httponly'] = True
+            cookie[cookie_name]['secure'] = True
             self.send_response(200)
-            self.send_header('Content-type', 'text/plain')
-            self.wfile.write(token.encode('utf-8'))
+            self.send_header('Set-Cookie', cookie.output())
             self.end_headers()
 
         elif page == 'register':
