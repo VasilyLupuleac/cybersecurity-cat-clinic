@@ -50,6 +50,7 @@ class PasswordDB:
         except:
             print("sad")
 
+
     def add(self, username, password):
         #check if the user exists, return false if it does
         username_check = ("SELECT 1 FROM users"
