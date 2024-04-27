@@ -60,7 +60,6 @@ class CustomHTTPRequestHandler(BaseHTTPRequestHandler):
             self.send_header('Content-type', 'text/html')
             self.end_headers()
             self.wfile.write(html_content)
-
         else:
             self.send_response(404)
             self.end_headers()
@@ -121,8 +120,7 @@ class CustomHTTPRequestHandler(BaseHTTPRequestHandler):
             self.send_response(404)
             self.end_headers()
 
-
-
+            
 if __name__ == '__main__':
     userStorage = DictPasswordStorage()
     PORT = 1642
