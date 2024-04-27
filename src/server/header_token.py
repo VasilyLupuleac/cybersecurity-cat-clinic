@@ -20,14 +20,11 @@ def check_token(token):
     try:
         payload = jwt.decode(token, key=secret, algorithms="HS256")
         user = payload['user']
-        rights = payload['rights']
         expiration = payload['expiration']
         if datetime.now().timestamp() > expiration:
             return False
-        return user, rights
+        return user
     except Exception:
         # print('Invalid signature')
         return False
 
-
-#print(make_token('admin'))

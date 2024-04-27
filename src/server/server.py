@@ -26,15 +26,14 @@ class CatClinicRequestHandler(BaseHTTPRequestHandler):
         return html
 
     def check_auth(self):
-        return 'admin'
         cookie_header = self.headers.get('Cookie')
         if not cookie_header:
             return False
-
         cookie = cookies.SimpleCookie(cookie_header)
-        token = cookie.get('auth').value
+        if 'token' not in cookie:
+            return False
+        token = cookie['token'].value
         return check_token(token)
-
 
     def do_GET(self):
         page = self.path.split('/')[1]
@@ -44,15 +43,17 @@ class CatClinicRequestHandler(BaseHTTPRequestHandler):
             self.end_headers()
             return
         if page == 'home':
-            result = self.check_auth()
-            if not result:
-                self.send_response(401)
+            user = self.check_auth()
+            if not user:
+                self.send_response(200)
+                self.send_header('Content-type', 'text/html')
                 self.end_headers()
-                self.wfile.write(b'Not logged in!')
+                html_content = self.get_html('newusers.html')
+                self.wfile.write(html_content)
                 return
             self.send_response(200)
             self.end_headers()
-            self.wfile.write(f'Welcome to the clinic, {result[0]}!'.encode('utf-8'))
+            self.wfile.write(f'Welcome to the clinic, {user}!'.encode('utf-8'))
 
         elif page == 'login':
             self.send_response(200)
@@ -83,18 +84,13 @@ class CatClinicRequestHandler(BaseHTTPRequestHandler):
             self.wfile.write(html_content)
 
         elif page == 'logout':
-            result = self.check_auth()
-            if not result:
-                self.send_response(401)
-                self.end_headers()
-                self.wfile.write(b'Not logged in!')
-                return
-            # TODO invalidate token
-            self.send_response(200)
-            html_content = self.get_html('bookapp.html')
-            self.send_header('Content-type', 'text/html')
+            cookie_name = 'token'
+            invalid_cookie = cookies.SimpleCookie()
+            invalid_cookie[cookie_name] = ''
+            self.send_response(301)
+            self.send_header('Location', '/home')
+            self.send_header('Set-Cookie', invalid_cookie.output(header=''))
             self.end_headers()
-            self.wfile.write(html_content)
         else:
             self.send_response(404)
             self.end_headers()
@@ -115,17 +111,16 @@ class CatClinicRequestHandler(BaseHTTPRequestHandler):
                 return
             token = make_token(username)
             cookie = cookies.SimpleCookie()
-            cookie_name = 'auth'
+            cookie_name = 'token'
             cookie[cookie_name] = token
             cookie[cookie_name]['httponly'] = True
             cookie[cookie_name]['secure'] = True
             self.send_response(200)
-            self.send_header('Set-Cookie', cookie.output())
+            self.send_header('Set-Cookie', cookie.output(header=''))
             self.end_headers()
 
         elif page == 'register':
             content_type, _ = cgi.parse_header(self.headers['Content-Type'])
-            print(f"Content-Type: {content_type}")
             if content_type == 'multipart/form-data':
                 form_data = cgi.FieldStorage(fp=self.rfile, headers=self.headers, environ={'REQUEST_METHOD': 'POST'})
                 username = form_data.getvalue('username')
