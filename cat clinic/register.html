@@ -90,18 +90,17 @@
                         id="password"
                         oninput="displayPicture()"
                         />
-                    <div class="power-container"> 
-                        <div id="power-point"></div> 
-                    </div> 
                 </div>
+                <div id="error">default</div>
+
+                <div id="strength"></div>
                 <br>
-                <div>
-                    <div id="catpic"></div>
-                </div>
+                <div id="catpic"></div>
+                
                 <br>
 
                 <div class="form-group">
-                    <label for="confirmPassword">Confirm Password:</label>
+                    <label for="confirmPwd">Confirm Password:</label>
                     <input type="password" id="confirmPwd" name="confirmPwd">
                 </div>
 
@@ -151,25 +150,42 @@
         password.oninput = function () { 
             let point = 0; 
             let value = password.value; 
-            let widthPower = 
-                ["1%", "25%", "50%", "75%", "100%"]; 
-            let colorPower = 
-                ["#D73F40", "#DC6551", "#F2B84F", "#BDE952", "#3ba62f"]; 
+    
+            let errorMessages = [
+                "The password must contain a number.",
+                "The password must contain a lowercase letter.",
+                "The password must contain an uppercase letter.",
+                "The password must contain a special character."
+            ]
             let pictureSource = 
                 ["pusheen_sad.jpg", "pusheen_sad.jpg", "pusheen_mid.jpg",
                 "pusheen_mid.jpg", "pusheen_happy.jpg"];
-
+            
+            document.getElementById("strength").innerHTML = "<small>Password is too short</small>";
             if (value.length >= 6) { 
                 let arrayTest = 
-                    [/[0-9]/, /[a-z]/, /[A-Z]/, /[^0-9a-zA-Z]/]; 
-                arrayTest.forEach((item) => { 
-                    if (item.test(value)) { 
+                    [/[0-9]/, /[a-z]/, /[A-Z]/, /[^0-9a-zA-Z]/];
+                let missing = -1;
+
+                for (let i = 0; i < 4; i++) {
+                    if (arrayTest[i].test(value)) { 
                         point += 1;
-                    } 
-                }); 
-            } 
-            power.style.width = widthPower[point]; 
-            power.style.backgroundColor = colorPower[point];
+                    } else {
+                        missing = i;
+                    }
+                }
+                if (missing > -1) {
+                    // TODO figure this out
+                    //document.getElementsById("error").innerHTML = "<small>" + errorMessages.at(missing) + "</small>";
+                }
+                if (point < 2) {
+                    document.getElementById("strength").innerHTML = "<small>Password strength: weak</small>";
+                } else if (point < 4) {
+                    document.getElementById("strength").innerHTML = "<small>Password strength: medium</small>";
+                } else {
+                    document.getElementById("strength").innerHTML = "<small>Password strength: strong</small>";
+                }
+            }
             
             document.getElementById("catpic").innerHTML = '<img src="' + pictureSource[point] + '" id="catpic"' +
             'width="100" height="100"' + '/>';

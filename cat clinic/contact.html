@@ -3,6 +3,38 @@
     <head>
         <title>Contact</title>
         <link rel="stylesheet" href="style.css">
+        <style>
+            
+            .book {
+                height: 20px;
+                background: #e91578;
+                border: 2px solid #e91578;
+                color: #ffffff;
+                font-size: 10px;
+                border-bottom-right-radius: 5px;
+                border-top-right-radius: 5px;
+                border-top-left-radius: 5px;
+                border-bottom-left-radius: 5px;
+                margin-right: 5px;
+            }
+
+            .book:focus {
+                outline: none;
+            }
+
+            .book:hover {
+                background-color: #f06ba9; 
+            }
+            .book a {
+                text-decoration: none;
+                color: #ffffff;
+                transition: .3s ease;
+            }
+
+            h4 {
+                padding-left: 20px;
+            }
+        </style>
     </head>
     <body>
         <div class="main">
@@ -19,11 +51,14 @@
                         <li><a href="#">My appointments</a></li><file:///C:/Users/Miruna/Downloads/login.html></file:>
                     </ul>
                 </div>
-
+              
+                   
+                  
                 <div class="user-tab">
                     <span class="greeting">Hello, <span class="username">username</span>!</span>
                     <a href="#"> <button class="btn">Logout</button></a>
                 </div>
+                
                 <div class="contact">
                     
                     <div class="clinic-info">
@@ -31,24 +66,60 @@
                         <p><strong>Address:</strong> Kissakatu, Lahti, Finland</p>
                     </div>
                     
-                    <div class="doctor">
-                        <h2>Our Doctors</h2>
-                        <div class="doctor-info">
-                            <img src="doctor1.jpeg">
-                            <h3>Dr. Miruna Gherasim</h3>
-                            <p>Surgeon</p>
-                            <p>Miruna.Gherasim@student.lut.fi</p>
-                            <p>+358 (0) 41 589 8143</p>
+                        <div class="doctor">
+                            <h2>Our Doctors</h2>
+                            <div class="doctor-info">
+                                <img src="doctor1.jpeg" alt="Miruna Gherasim">
+                                <h3>Dr. Miruna Gherasim</h3>
+                                <p>Surgeon</p>
+                                <p>Miruna.Gherasim@student.lut.fi</p>
+
+                                <h4>
+                                    <button class="book"><a href="#">Book an appointment</a></button>
+                                </h4>
+
+
+                            </div>
+                            <div class="doctor-info">
+                                <img src="doctor2.jpeg" alt="Vasilii Lupuliak">
+                                <h3>Dr. Vasilii Lupuliak</h3>
+                                <p>Speech therapist</p>
+                                <p>Vasilii.Lupuliak@student.lut.fi</p>
+
+                                <h4>
+                                    <button class="book"><a href="#">Book an appointment</a></button>
+                                </h4>
+                            
+                            </div>
+                            <div class="doctor-info">
+                                <img src="doctor3.jpg" alt="Melinda Pozna">
+                                <h3>Dr. Melinda Pózna</h3>
+                                <p>Cat psychologist</p>
+                                <p>Melinda.Pozna@student.lut.fi</p>
+
+                                <h4>
+                                    <button class="book"><a href="#">Book an appointment</a></button>
+                                </h4>
+                            
+                            </div>
+
+                            <div class="doctor-info">
+                                <img src="doctor4.jpg" alt="Anuj Rathee">
+                                <h3>Dr. Anuj Rathee</h3>
+                                <p>General cat practitioner</p>
+                                <p>Anuj.Rathee@student.lut.fi</p>
+
+                                <h4>
+                                    <button class="book"><a href="#">Book an appointment</a></button>
+                                </h4>
+                            
+                            </div>
+
                         </div>
-                        <div class="doctor-info">
-                            <img src="doctor2.jpeg" alt="Doctor 2">
-                            <h3>Dr. Vasilii Lapuleac</h3>
-                            <p>Something</p>
-                            <p>Vasily.Lapuleac@student.lut.fi</p>
-                            <p>+358 (0) 46 592 3664</p>
-                        </div>
-                    </div>
+                    
+           
                 </div>
+                
 
             </div>
         </div>
