@@ -3,13 +3,17 @@
     padding: 0;
 }
 
+
+
 .main{
     width: 100%;
     background: linear-gradient(to top, rgba(0,0,0,0.5)50%,rgba(0,0,0,0.5)50%, url(1.jpg));
     background-image: url("1.jpg");
-    background-position: center;
+    background-repeat: repeat-y;
+    background-attachment: fixed;
+    background-position: top 70px;
     background-size: cover;
-    height: 100vh;
+    height: 200vh;
 }
 
 .navbar{

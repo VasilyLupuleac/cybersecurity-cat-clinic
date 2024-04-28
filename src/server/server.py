@@ -91,7 +91,6 @@ class CatClinicRequestHandler(BaseHTTPRequestHandler):
             self.send_header('Content-type', 'text/html')
             self.end_headers()
             self.wfile.write(html_content)
-
         elif page == 'appointments':
             self.send_response(200)
             self.send_html('appointment.html')
@@ -104,6 +103,7 @@ class CatClinicRequestHandler(BaseHTTPRequestHandler):
             self.send_header('Location', '/home')
             self.send_header('Set-Cookie', invalid_cookie.output(header=''))
             self.end_headers()
+
         else:
             self.send_response(404)
             self.end_headers()

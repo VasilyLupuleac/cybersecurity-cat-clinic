@@ -1,8 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet"
+            href="pwdstyle.css" 
+            type="text/css" />
     <title>Registration Form</title>
     <link rel="stylesheet" href="style.css">
     <style>
@@ -67,6 +71,10 @@
         }
     </style>
 </head>
+
+
+
+
 <body>
     <div class="container">
         <div class="registration-box">
@@ -76,20 +84,35 @@
                     <label for="username">Username:</label>
                     <input type="text" id="username" name="username">
                 </div>
-                <div class="form-group">
-                    <label for="password">Password:</label>
-                    <input type="password" id="password" name="password">
+                <div class="group">
+                    <label for="">Password:</label> 
+                    <input type="password"
+                        id="password"
+                        oninput="displayPicture()"
+                        />
                 </div>
+                <div id="error">default</div>
+
+                <div id="strength"></div>
+                <br>
+                <div id="catpic"></div>
+                
+                <br>
+
                 <div class="form-group">
                     <label for="confirmPwd">Confirm Password:</label>
                     <input type="password" id="confirmPwd" name="confirmPwd">
                 </div>
+
                 <div class="form-group">
                     <input type="submit" value="Register">
                 </div>
             </form>
         </div>
     </div>
+
+
+  
 
     <script>
         document.getElementById('registrationForm').addEventListener('submit', function(event) {
@@ -117,9 +140,58 @@
                 // Handle network errors
                 console.error('Error:', error);
                 // Optionally, display an error message to the user
-                alert('Error');
+                alert('Network error. Please try again later.');
             });
         });
+
+        //password strength meter
+        let password = document.getElementById("password"); 
+        let power = document.getElementById("power-point"); 
+        password.oninput = function () { 
+            let point = 0; 
+            let value = password.value; 
+    
+            let errorMessages = [
+                "The password must contain a number.",
+                "The password must contain a lowercase letter.",
+                "The password must contain an uppercase letter.",
+                "The password must contain a special character."
+            ]
+            let pictureSource = 
+                ["pusheen_sad.jpg", "pusheen_sad.jpg", "pusheen_mid.jpg",
+                "pusheen_mid.jpg", "pusheen_happy.jpg"];
+            
+            document.getElementById("strength").innerHTML = "<small>Password is too short</small>";
+            if (value.length >= 6) { 
+                let arrayTest = 
+                    [/[0-9]/, /[a-z]/, /[A-Z]/, /[^0-9a-zA-Z]/];
+                let missing = -1;
+
+                for (let i = 0; i < 4; i++) {
+                    if (arrayTest[i].test(value)) { 
+                        point += 1;
+                    } else {
+                        missing = i;
+                    }
+                }
+                if (missing > -1) {
+                    // TODO figure this out
+                    //document.getElementsById("error").innerHTML = "<small>" + errorMessages.at(missing) + "</small>";
+                }
+                if (point < 2) {
+                    document.getElementById("strength").innerHTML = "<small>Password strength: weak</small>";
+                } else if (point < 4) {
+                    document.getElementById("strength").innerHTML = "<small>Password strength: medium</small>";
+                } else {
+                    document.getElementById("strength").innerHTML = "<small>Password strength: strong</small>";
+                }
+            }
+            
+            document.getElementById("catpic").innerHTML = '<img src="' + pictureSource[point] + '" id="catpic"' +
+            'width="100" height="100"' + '/>';
+        
+           
+        };
     </script>
 </body>
 </html>
