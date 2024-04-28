@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Book an appointment</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .calendar {
+            font-family: Arial, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        .calendar th, .calendar td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+
+        .calendar th {
+            background-color: #f2f2f2;
+        }
+
+        .calendar td {
+            cursor: pointer;
+        }
+
+        .calendar td:hover {
+            background-color: #eb90c2;
+        }
+        .appointment-form {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            
+            max-width: 300px;
+        }
+
+        input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #e91578;
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #db549e;
+        }
+
+    </style>
+</head>
+<body>
+<div class="main">
+    <div class="navbar">
+        <div class="icon">
+            <h1 class="logo">Cat Clinic</h1>
+        </div>
+
+        <div class="menu">
+            <ul>
+                <li><a href="/home">Home</a></li>
+                <li><a href="/book">Book an appointment</a></li>
+                <li><a href="/contact">Contact us</a></li>
+                <li><a href="/appointments">My appointments</a></li>
+            </ul>
+        </div>
+
+        <div class="user-tab">
+            <span id="greeting">Hello, <span id="username"></span>!</span>
+            <script>
+                        document.getElementById("username").innerHTML = sessionStorage.getItem("username");
+
+            </script>
+            <a href="/logout">
+                <button class="btn">Logout</button>
+            </a>
+        </div>
+        <div class="content">
+           
+                
+
+                  <div class="container">
+                    <div class="appointment-form">
+                        <h2>Book an appointment</h2>
+                        <form id="book" action="/book" method="POST">
+                            <div class="form-group">
+                                <label for="book">Appointment date</label>
+                             
+                                <input type="date" id="date" name="date">
+                            </div>
+                            <br>
+                            <div class="form-group">
+                                <label for="doctor">Doctor</label>
+                                <select id="" name="Doctors">
+                                    <option value="doctor1">Miruna Gherasim, Surgeon</option>
+                                    <option value="doctor2">Vasilii Lupuliak, Speech therapist</option>
+                                    <option value="doctor3">Melinda Pozna, Psychologist</option>
+                                    <option value="doctor4">Anuj Rathee, General practitioner</option>
+                                </select>
+
+                            </div>
+                            <br>
+                            <div class="form-group">
+                                <input type="submit" value="Search">
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+
+    
+    </div>
+</div>
+</body>
+</html>
