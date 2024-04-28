@@ -1,29 +1,29 @@
 import cgi
 import os
 import ssl
-from http.server import HTTPServer, BaseHTTPRequestHandler
 from http import cookies
+from http.server import HTTPServer, BaseHTTPRequestHandler
 
+from dictAppointmentStorage import DictAppointmentStorage
 from header_token import make_token, check_token
 from passwordStorage import DictPasswordStorage
-from dictAppointmentStorage import DictAppointmentStorage
-
 
 passwordStorage = DictPasswordStorage()
 appointmentStorage = DictAppointmentStorage()
 
+current_dir = os.path.dirname(os.path.realpath(__file__))
+parent_dir = os.path.join(current_dir, os.pardir)
+root = os.path.join(parent_dir, os.pardir)
+pages_dir = os.path.join(root, 'cat clinic')
+
 
 class CatClinicRequestHandler(BaseHTTPRequestHandler):
-    current_dir = os.path.dirname(os.path.realpath(__file__))
-    parent_dir = os.path.join(current_dir, os.pardir)
-    root = os.path.join(parent_dir, os.pardir)
-    pages_dir = os.path.join(root, 'cat clinic')
 
     def send_message(self):
         pass
 
     def send_html(self, filename):
-        file_path = os.path.join(CatClinicRequestHandler.pages_dir, filename)
+        file_path = os.path.join(pages_dir, filename)
         with open(file_path, 'rb') as file:
             html = file.read()
         self.send_header('Content-type', 'text/html')
@@ -48,7 +48,7 @@ class CatClinicRequestHandler(BaseHTTPRequestHandler):
             self.end_headers()
             return
         if page == 'style.css':
-            filename = os.path.join(self.pages_dir, 'style.css')
+            filename = os.path.join(pages_dir, 'style.css')
             with open(filename, 'rb') as file:
                 css = file.read()
             self.send_response(200)
@@ -58,7 +58,7 @@ class CatClinicRequestHandler(BaseHTTPRequestHandler):
             return
 
         if page in ['1.jpg', 'pusheen_happy.jpg', 'pusheen_mid.jpg', 'pusheen_sad.jpg']:
-            filename = os.path.join(self.pages_dir, page)
+            filename = os.path.join(pages_dir, page)
             with open(filename, 'rb') as file:
                 jpg = file.read()
             self.send_response(200)
@@ -174,20 +174,19 @@ class CatClinicRequestHandler(BaseHTTPRequestHandler):
 
 class CatClinicServer:
     def __init__(self, host, port):
-        current_dir = os.path.dirname(os.path.realpath(__file__))
-        parent_dir = os.path.join(current_dir, os.pardir)
-        root = os.path.join(parent_dir, os.pardir)
-        self.pages_dir = os.path.join(root, 'cat clinic')
         self.host = host
         self.port = port
 
     def run(self):
         server = HTTPServer((self.host, self.port), CatClinicRequestHandler)
         context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-        with open('pass.txt', 'r') as pass_file:
+        pass_filename = os.path.join(root, 'pass.txt')
+        with open(pass_filename, 'r') as pass_file:
             password = pass_file.readline().strip()
-        context.load_cert_chain(keyfile='key.pem',
-                                certfile='cert.pem',
+        keyfile = os.path.join(root, 'key.pem')
+        certfile = os.path.join(root, 'cert.pem')
+        context.load_cert_chain(keyfile=keyfile,
+                                certfile=certfile,
                                 password=password)
         context.check_hostname = False
 
