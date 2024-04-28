@@ -34,7 +34,7 @@ class DictAppointmentStorage:
                            lambda a: a.slot)
         return len(apts) < len(self.times)
 
-    def get_appointments_user(self, user):
+    def get_user_appointments(self, user):
         return self.select(lambda a: a.user == user, self.appointments,
                            lambda a: (a.date, self.times[a.slot]))
 

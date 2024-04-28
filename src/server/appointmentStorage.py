@@ -25,6 +25,14 @@ class appointmentStorage():
                 username varchar(50) not null,
                 doctor varchar(50) not null);""", prepare=True)
 
+            self.cursor.execute("""DROP TABLE IF EXISTS doctors;""")
+            self.cursor.execute("""CREATE TABLE doctors(
+                            id serial not null PRIMARY KEY,
+                            name varchar(50) not null;""", prepare=True)
+
+            self.cursor.execute("""INSERT INTO doctors VALUES(
+                                'Vasilii Lupuliak', 'Melinda Pozna', 'Miruna Gherasim', 'Anuj Rathee');""")
+
             #create table for slots and times
             self.cursor.execute("""CREATE TABLE IF NOT EXISTS slots(
                                 id serial not null PRIMARY KEY,
@@ -40,7 +48,13 @@ class appointmentStorage():
             print("died")
             pass
 
-    def reserveTime(self, username, doctor, new_date, new_slot):
+    def check_doctor(self, doctor):
+        check_doc = (f"""SELECT doc_name FROM doctors 
+                        WHERE doc_name = '{doctor}';""")
+        doc = self.cursor.execute(check_doc, prepare=True).fetchone()
+        return doc
+
+    def reserve_time(self, username, doctor, new_date, new_slot):
         #TODO change
         check_availability = (f"""SELECT COUNT(*) FROM reserved_times
                                 WHERE appointment_date = '{new_date}' AND slot_id = {new_slot} AND doctor = '{doctor}';""")
@@ -65,7 +79,7 @@ class appointmentStorage():
 
 
     # get all appointments for one user
-    def getUsersAppointments(self, username):
+    def get_user_appointments(self, username):
         result = self.cursor.execute(f"""SELECT reserved_times.appointment_date, slots.slottime FROM reserved_times
                                 JOIN slots ON reserved_times.slot_id = slots.id
                                 WHERE reserved_times.username = '{username}';""", prepare=True)
@@ -73,16 +87,17 @@ class appointmentStorage():
 
 
     #all available appointments in one day for one doctor
-    def doctorAvailability(self, doctor):
+    def get_appointments_day(self, doctor, date):
         result = self.cursor.execute(f"""SELECT slottimes FROM slots
                             EXCEPT (
                             SELECT reserved_times.appointment_date, slots.slottime FROM reserved_times
                             JOIN slots ON reserved_times.slot_id = slots.id
-                            WHERE doctor = '{doctor}');""", prepare=True)
+                            WHERE doctor = '{doctor}'
+                            AND appointment_date = '{date}');""", prepare=True)
         return result
 
     #days in one month for one doctor that have available slots
-    def isDoctorAvailable(self, doctor, day):
+    def date_is_available(self, doctor, day):
         result = self.cursor.execute(f"""SELECT COUNT(*) from reserved_times
                             WHERE doctor = '{doctor}' AND appointment_date = '{day}';""").fetchone()
         return result < 16
