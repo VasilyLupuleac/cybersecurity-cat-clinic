@@ -6,6 +6,7 @@ from http import cookies
 
 from header_token import make_token, check_token
 from passwordStorage import DictPasswordStorage
+from dictAppointmentStorage import DictAppointmentStorage
 
 
 storage = DictPasswordStorage
@@ -19,11 +20,13 @@ class CatClinicRequestHandler(BaseHTTPRequestHandler):
     def send_message(self):
         pass
 
-    def get_html(self, filename):
+    def send_html(self, filename):
         file_path = os.path.join(CatClinicRequestHandler.pages_dir, filename)
         with open(file_path, 'rb') as file:
             html = file.read()
-        return html
+        self.send_header('Content-type', 'text/html')
+        self.end_headers()
+        self.wfile.write(html)
 
     def check_auth(self):
         cookie_header = self.headers.get('Cookie')
@@ -42,14 +45,30 @@ class CatClinicRequestHandler(BaseHTTPRequestHandler):
             self.send_header('Location', '/home')
             self.end_headers()
             return
+        if page == 'style.css':
+            filename = os.path.join(self.pages_dir, 'style.css')
+            with open(filename, 'rb') as file:
+                css = file.read()
+            self.send_response(200)
+            self.send_header('Content-type', 'text/css')
+            self.end_headers()
+            self.wfile.write(css)
+            return
+
+        if page == '1.jpg':
+            filename = os.path.join(self.pages_dir, '1.jpg')
+            with open(filename, 'rb') as file:
+                jpg = file.read()
+            self.send_response(200)
+            self.send_header('Content-type', 'image/jpg')
+            self.end_headers()
+            self.wfile.write(jpg)
+
         if page == 'home':
             user = self.check_auth()
             if not user:
                 self.send_response(200)
-                self.send_header('Content-type', 'text/html')
-                self.end_headers()
-                html_content = self.get_html('newusers.html')
-                self.wfile.write(html_content)
+                self.send_html('newusers.html')
                 return
             self.send_response(200)
             self.end_headers()
@@ -64,10 +83,7 @@ class CatClinicRequestHandler(BaseHTTPRequestHandler):
 
         elif page == 'register':
             self.send_response(200)
-            html_content = self.get_html('register.html')
-            self.send_header('Content-type', 'text/html')
-            self.end_headers()
-            self.wfile.write(html_content)
+            self.send_html('register.html')
 
         elif page == 'book':
             self.send_response(200)
@@ -78,10 +94,7 @@ class CatClinicRequestHandler(BaseHTTPRequestHandler):
 
         elif page == 'appointments':
             self.send_response(200)
-            html_content = self.get_html('bookapp.html')
-            self.send_header('Content-type', 'text/html')
-            self.end_headers()
-            self.wfile.write(html_content)
+            self.send_html('appointment.html')
 
         elif page == 'logout':
             cookie_name = 'token'
@@ -140,11 +153,20 @@ class CatClinicRequestHandler(BaseHTTPRequestHandler):
                         self.send_response(200)  # TODO
                         self.send_message('User already exists')
                         self.end_headers()
-
             else:
                 self.send_response(400)  # Bad request
                 self.end_headers()
                 self.wfile.write(b'Invalid content type')
+
+        elif page == 'book':
+            user = self.check_auth()
+            if not user:
+                self.send_response(401)
+                self.end_headers()
+                return
+
+            # TODO
+            self.end_headers()
 
         else:
             self.send_response(404)
@@ -177,6 +199,7 @@ class CatClinicServer:
 
 if __name__ == '__main__':
     storage = DictPasswordStorage()
+    appointmentStorage = DictAppointmentStorage()
     port = 1642
     host = 'localhost'
     cat_server = CatClinicServer(host, port)
