@@ -13,24 +13,26 @@
 
                 <div class="menu">
                     <ul>
-                        <li><a href="#">Home</a></li>
-                        <li><a href="#">Book an appointment</a></li>
-                        <li><a href="#">Contact us</a></li>
-                        <li><a href="#">My appointments</a></li><file:///C:/Users/Miruna/Downloads/login.html></file:>
+                        <li><a href="/home">Home</a></li>
+                        <li><a href="/book">Book an appointment</a></li>
+                        <li><a href="/contact">Contact us</a></li>
+                        <li><a href="/appointments">My appointments</a></li>
                     </ul>
                 </div>
 
                 <div class="user-tab">
-                    <span class="greeting">Hello, <span class="username">username</span>!</span>
-                    <a href="#"> <button class="btn">Logout</button></a>
+                    <span id="greeting">Hello, <span id="username"></span>!</span>
+                    <script>
+                        document.getElementById("username").innerHTML = sessionStorage.getItem("username");
+                    </script>
+                    <a href="/logout"> <button class="btn">Logout</button></a>
                 </div>
                 <div class="content">
                     <p class="par">Welcome to our Cat Clinic, <br> where every feline's happiness is our top priority!<br>Our clinic is dedicated to providing exceptional care for your beloved companions.<br>From routine check-ups to specialized treatments,<br>our team of veterinarians and staff members are here to ensure that your cat<br>receives the best possible care in a stress-free environment.<br>We understand that cats have unique needs,<br>and we aim to create a welcoming atmosphere where they can feel safe.<br>In our clinic, a happy cat is a healthy cat!</p>
-
-                    <button class="cn"><a href="#">Login</a></button>
                 </div>
 
             </div>
         </div>
     </body>
 </html>
+
