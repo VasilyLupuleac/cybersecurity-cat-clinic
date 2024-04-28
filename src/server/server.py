@@ -83,8 +83,14 @@ class CatClinicRequestHandler(BaseHTTPRequestHandler):
             self.send_html('register.html')
 
         elif page == 'contact':
-            self.send_response(200)
-            self.send_html('contact.html')
+            user = self.check_auth ()
+            if not user:
+                self.send_response ( 200 )
+                self.send_html ( 'contact_new.html' )
+                return
+            self.send_response ( 200 )
+            self.send_html ( 'contact.html' )
+
 
         elif page == 'book':
             self.send_response(200)
