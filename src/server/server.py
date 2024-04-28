@@ -9,7 +9,9 @@ from passwordStorage import DictPasswordStorage
 from dictAppointmentStorage import DictAppointmentStorage
 
 
-storage = DictPasswordStorage
+passwordStorage = DictPasswordStorage()
+appointmentStorage = DictAppointmentStorage()
+
 
 class CatClinicRequestHandler(BaseHTTPRequestHandler):
     current_dir = os.path.dirname(os.path.realpath(__file__))
@@ -55,8 +57,8 @@ class CatClinicRequestHandler(BaseHTTPRequestHandler):
             self.wfile.write(css)
             return
 
-        if page == '1.jpg':
-            filename = os.path.join(self.pages_dir, '1.jpg')
+        if page in ['1.jpg', 'pusheeen_happy.jpg', 'pusheeen_mid.jpg', 'pusheeen_sad.jpg']:
+            filename = os.path.join(self.pages_dir, page)
             with open(filename, 'rb') as file:
                 jpg = file.read()
             self.send_response(200)
