@@ -20,7 +20,8 @@
                     method: 'POST',
                     body: {}
                 }).then(response => response.json()
-                ).then((apts) => apts.foreach((apt) =>
+                ).then((apts) =>
+                apts.foreach((apt) =>
 					const listItem = document.createElement("li");
                     listItem.textContent = apt["date"] " " + apt["time"] + " " + apt["doctor"];
                     timeList.appendChild(listItem);
@@ -63,7 +64,7 @@
 
     <div class="content">
         <ul id="time-list">
-            <!-- Available booking times with "Book" buttons will be populated here -->
+            <!-- Available appointments will be listed here -->
         </ul>
     </div>
 

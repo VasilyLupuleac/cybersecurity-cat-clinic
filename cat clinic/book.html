@@ -4,29 +4,6 @@
     <title>Book an appointment</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        .calendar {
-            font-family: Arial, sans-serif;
-            border-collapse: collapse;
-            width: 100%;
-        }
-
-        .calendar th, .calendar td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: center;
-        }
-
-        .calendar th {
-            background-color: #f2f2f2;
-        }
-
-        .calendar td {
-            cursor: pointer;
-        }
-
-        .calendar td:hover {
-            background-color: #eb90c2;
-        }
         .appointment-form {
             background-color: #fff;
             border-radius: 10px;
@@ -51,9 +28,12 @@
             background-color: #db549e;
         }
 
+
     </style>
+
 </head>
 <body>
+
 <div class="main">
     <div class="navbar">
         <div class="icon">
@@ -74,47 +54,118 @@
             <script>
                         document.getElementById("username").innerHTML = sessionStorage.getItem("username");
 
+
             </script>
             <a href="/logout">
                 <button class="btn">Logout</button>
             </a>
         </div>
         <div class="content">
-           
-                
 
-                  <div class="container">
-                    <div class="appointment-form">
-                        <h2>Book an appointment</h2>
-                        <form id="book" action="/book" method="POST">
-                            <div class="form-group">
-                                <label for="book">Appointment date</label>
-                             
-                                <input type="date" id="date" name="date">
-                            </div>
-                            <br>
-                            <div class="form-group">
-                                <label for="doctor">Doctor</label>
-                                <select id="" name="Doctors">
-                                    <option value="doctor1">Miruna Gherasim, Surgeon</option>
-                                    <option value="doctor2">Vasilii Lupuliak, Speech therapist</option>
-                                    <option value="doctor3">Melinda Pozna, Psychologist</option>
-                                    <option value="doctor4">Anuj Rathee, General practitioner</option>
-                                </select>
 
-                            </div>
-                            <br>
-                            <div class="form-group">
-                                <input type="submit" value="Search">
-                            </div>
-                        </form>
-                    </div>
+            <div class="container">
+                <div class="appointment-form">
+                    <h2>Book an appointment</h2>
+                    <form id="book" action="/book" method="POST">
+                        <div class="form-group">
+                            <label for="book">Appointment date</label>
+
+                            <input type="date" id="date" name="date">
+                        </div>
+                        <br>
+                        <div class="form-group">
+                            <label for="doctor">Doctor</label>
+                            <select id="doctor" name="Doctors">
+                                <option value="Miruna Gherasim">Miruna Gherasim, Surgeon</option>
+                                <option value="Vasilii Lupuliak">Vasilii Lupuliak, Speech therapist</option>
+                                <option value="Melinda Pozna">Melinda Pozna, Psychologist</option>
+                                <option value="Anuj Rathee">Anuj Rathee, General practitioner</option>
+                            </select>
+
+                        </div>
+                        <br>
+                        <div class="form-group">
+                            <input type="submit" id="submit" value="Search">
+                        </div>
+                    </form>
                 </div>
-
             </div>
+            <ul id="time-list">
 
-    
+                <!-- Available booking times with "Book" buttons will be populated here -->
+            </ul>
+
+        </div>
+
+
     </div>
 </div>
+<script>
+    const timeList = document.getElementById("time-list");
+    document.getElementById('book').addEventListener('submit', function(event) {
+        timeList.innerHTML = ""; // Clear previous list
+        event.preventDefault();
+        const formData = new FormData();
+        let date = document.getElementById('date').value;
+        formData.append('date', date);
+        sessionStorage.setItem('date', date)
+        let doctor = document.getElementById('doctor').value;
+        sessionStorage.setItem('doctor', doctor);
+        formData.append('doctor', doctor);
+
+        // Send the form data to the server
+        fetch('/book', {
+            headers: {'Accept' : 'application/json'},
+            method: 'POST',
+            body: formData
+        }).then(response => response.json())
+          .then((data) => {
+              if (data.success) {
+                  data.times.forEach(time => {
+                      const listItem = document.createElement("li");
+                      const button = document.createElement("button");
+                      button.textContent = "Book";
+                      button.onclick = function() {
+                            reserveTime(time)
+                      };
+                      listItem.textContent = time + " ";
+                      listItem.appendChild(button);
+                      timeList.appendChild(listItem);
+                  });
+              } else {
+                  // Display an error message
+                  timeList.textContent = data.error;
+              }
+          })
+          .catch(error => {
+              console.error('Error:', error);
+	});});
+          function reserveTime(time) {
+    const jsonResponse = {
+        'date': sessionStorage.getItem('date'),
+        'time': time,
+        'doctor': sessionStorage.getItem('doctor')
+    };
+
+    fetch('/reserve', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(jsonResponse)
+    })
+    .then(response => response.status).
+    then(code => {
+        if (code == 201) {
+            window.href('/appointments');
+        }
+        else alert('Couldn't reserve an appointment');
+    )
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+
+</script>
 </body>
 </html>

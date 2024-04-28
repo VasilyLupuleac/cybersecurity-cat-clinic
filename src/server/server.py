@@ -2,6 +2,7 @@ import cgi
 import os
 import ssl
 import json
+from datetime import datetime
 from http import cookies
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
@@ -100,7 +101,7 @@ class CatClinicRequestHandler(BaseHTTPRequestHandler):
                 self.end_headers()
                 return
             self.send_response(200)
-            self.send_html('bookapp.html')
+            self.send_html('book.html')
 
         elif page == 'appointments':
             user = self.check_auth()
@@ -156,11 +157,7 @@ class CatClinicRequestHandler(BaseHTTPRequestHandler):
                 password = form_data.getvalue('password')
                 confirm_pwd = form_data.getvalue('confirmPwd')
 
-                print(
-                    f"Received registration data - Username: {username}, Password: {password}, Confirm Password: {confirm_pwd}")
-
                 if str(password) == str(confirm_pwd):
-                    # TODO adding user to the password storage and checking if the user already exist
                     if passwordStorage.add(username, password):
                         self.send_response(201)  # Created (redirect)
                         self.send_header('Location', '/login')  # Redirect to login page
@@ -181,9 +178,35 @@ class CatClinicRequestHandler(BaseHTTPRequestHandler):
                 self.end_headers()
                 return
 
-            date = '2024-02-03'  # TODO change
-            doctor = 'Vasilii Lupuliak'
-            time = '11:30'
+            form_data = cgi.FieldStorage(fp=self.rfile, headers=self.headers, environ={'REQUEST_METHOD': 'POST'})
+            print(form_data.keys())
+            doctor = form_data.getvalue('doctor') or form_data.getvalue('Doctors')
+            print(doctor)
+            date = datetime.strptime(form_data.getvalue('date'), "%Y-%m-%d").date()
+
+            if not appointmentStorage.check_doctor(doctor):
+                self.send_response(400)
+                self.end_headers()
+                return
+
+            apts = appointmentStorage.get_appointments_day(doctor, date)
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json')
+            self.end_headers()
+            self.wfile.write(json.dumps(apts).encode('utf-8'))
+
+        elif page == 'reserve':
+            user = self.check_auth()
+            if not user:
+                self.send_response(401)
+                self.end_headers()
+                return
+
+            json_string = self.rfile.read(int(self.headers['Content-Length']))
+            json_data = json.loads(json_string)
+            time = json_data['time']
+            date = json_data['date']
+            doctor = json_data['doctor']
 
             if not appointmentStorage.check_doctor(doctor):
                 self.send_response(400)
@@ -234,9 +257,7 @@ class CatClinicServer:
 
     def run(self):
         server = HTTPServer((self.host, self.port), CatClinicRequestHandler)
-
-
-        server.socket = context.wrap_socket(server.socket, server_side=True)
+        server.socket = self.context.wrap_socket(server.socket, server_side=True)
         print(f'Server running at https://{self.host}:{self.port}')
         server.serve_forever()
 
@@ -246,5 +267,5 @@ if __name__ == '__main__':
     appointmentStorage = DictAppointmentStorage()
     port = 1642
     host = 'localhost'
-    cat_server = CatClinicServer(host, port)
+    cat_server = CatClinicServer(host, port, 'Kitten')
     cat_server.run()

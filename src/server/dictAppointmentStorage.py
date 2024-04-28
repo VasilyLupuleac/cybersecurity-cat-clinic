@@ -1,3 +1,5 @@
+
+
 class Appointment:
     def __init__(self, user, doctor, date, slot):
         self.user = user
@@ -32,13 +34,13 @@ class DictAppointmentStorage:
         apts = self.select(lambda a: (a.doctor == doctor and
                                       a.date == date),
                            lambda a: a.slot)
-        return len(apts) < len(self.times)
+        return len(apts) < len(self.slots)
 
     def get_user_appointments(self, user):
         return self.select(lambda a: a.user == user, self.appointments,
-                           lambda a: (a.date, self.times[a.slot]))
+                           lambda a: (a.date, self.slots[a.slot]))
 
     def get_appointments_day(self, doctor, day):
         day_appointments = self.select(lambda a: a.date == day and a.doctor == doctor,
                                        lambda a: a.slot)
-        return [t for i, t in enumerate(self.times) if i not in day_appointments]
+        return [t for i, t in enumerate(self.slots) if i not in day_appointments]

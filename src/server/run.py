@@ -3,7 +3,8 @@ from server import CatClinicServer
 
 password = ''
 db_params = None
-
+passwordStorage = {}
+userStorage = {}
 
 def launch_password_window():
     pass_window = Tk()
@@ -20,18 +21,21 @@ def launch_password_window():
         password = pass_entry.get()
         global server
         try:
-            server = CatClinicServer()
+            server = CatClinicServer('localhost', server, password)
             launch_db_window()
         except:
-            #top = Toplevel(pass_window)
-            #Label(top, text="Wrong password")
+            popup = Tk()
+            popup.geometry("200x100")
+            popup.title("Error")
+            plabel = Label(popup, text="Wrong password", font='Arial 12')
+            plabel.grid(sticky=W, padx=10, pady=10)
+            def relaunch_pass():
+                pass_window.destroy()
+                popup.destroy()
+                launch_password_window()
+            okbutton = Button(popup, text="Ok", command=relaunch_pass)
+            okbutton.grid(padx=10, pady=10, sticky=E)
 
-            top = Toplevel(pass_window)
-            top.geometry("750x250")
-            top.title("Child Window")
-            label = Label(top, text="Wrong password", font=('Arial 18')).place(x=150, y=80)
-            okbutton = Button(top, text="Ok", command=launch_password_window)
-            okbutton.grid(padx=10, sticky=E)
 
     button = Button(pass_window, text="Ok", command=get_password)
     button.grid(padx=10, sticky=E)
