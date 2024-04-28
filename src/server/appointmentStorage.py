@@ -1,14 +1,13 @@
 import psycopg
 
-class appointmentStorage():
-    def __init__(self):
-        db_user = input("username for postgres: ")
-        db_password = input("password for database: ")
+
+class AppointmentStorage:
+    def __init__(self, dbname, db_user, db_password):
         self.connection = psycopg.connect(
-            dbname="postgres",
+            dbname=dbname,
             user=db_user,
             password=db_password,
-            host="localhost",
+            host="127.0.0.1",
             autocommit=True
         )
         self.cursor = self.connection.cursor()
@@ -17,7 +16,7 @@ class appointmentStorage():
         except psycopg.errors.DuplicateDatabase:
             pass
         try:
-            #create table for taken times
+            # create table for taken times
             self.cursor.execute("""CREATE TABLE IF NOT EXISTS reserved_times(
                 id serial not null PRIMARY KEY,
                 appointment_date date not null,
@@ -33,12 +32,12 @@ class appointmentStorage():
             self.cursor.execute("""INSERT INTO doctors VALUES(
                                 'Vasilii Lupuliak', 'Melinda Pozna', 'Miruna Gherasim', 'Anuj Rathee');""")
 
-            #create table for slots and times
+            # create table for slots and times
             self.cursor.execute("""CREATE TABLE IF NOT EXISTS slots(
                                 id serial not null PRIMARY KEY,
                                 slottime varchar(5) not null);""", prepare=True)
 
-            #fill slots with values from 9 to 17
+            # fill slots with values from 9 to 17
             times = ['09'] + list(map(str, range(10, 17)))
             slots_to_insert = [f'{x}:{y}' for x in times for y in ['00', '30']]
             for slot in slots_to_insert:
@@ -55,7 +54,7 @@ class appointmentStorage():
         return doc
 
     def reserve_time(self, username, doctor, new_date, new_slot):
-        #TODO change
+        # TODO change
         check_availability = (f"""SELECT COUNT(*) FROM reserved_times
                                 WHERE appointment_date = '{new_date}' AND slot_id = {new_slot} AND doctor = '{doctor}';""")
         if (self.cursor.execute(check_availability, prepare=True).fetchone() == 1):
@@ -68,15 +67,12 @@ class appointmentStorage():
 	                    '{doctor}');""")
         self.cursor.execute(add_timeslot, prepare=True)
 
-
-
     def getReservedTimes(self, doctor):
         get_sql = (f"""SELECT reserved_times.appointment_date, slots.slottime FROM reserved_times
                     JOIN slots ON reserved_times.slot_id = slots.id
                     WHERE doctor = '{doctor}';""")
         reserved_times = self.cursor.execute(get_sql, prepare=True).fetchall()
         return reserved_times
-
 
     # get all appointments for one user
     def get_user_appointments(self, username):
@@ -85,8 +81,7 @@ class appointmentStorage():
                                 WHERE reserved_times.username = '{username}';""", prepare=True)
         return result.fetchall()
 
-
-    #all available appointments in one day for one doctor
+    # all available appointments in one day for one doctor
     def get_appointments_day(self, doctor, date):
         result = self.cursor.execute(f"""SELECT slottimes FROM slots
                             EXCEPT (
@@ -96,7 +91,7 @@ class appointmentStorage():
                             AND appointment_date = '{date}');""", prepare=True)
         return result
 
-    #days in one month for one doctor that have available slots
+    # days in one month for one doctor that have available slots
     def date_is_available(self, doctor, day):
         result = self.cursor.execute(f"""SELECT COUNT(*) from reserved_times
                             WHERE doctor = '{doctor}' AND appointment_date = '{day}';""").fetchone()
@@ -105,4 +100,3 @@ class appointmentStorage():
 
 if __name__ == '__main__':
     appointments = appointmentStorage()
-

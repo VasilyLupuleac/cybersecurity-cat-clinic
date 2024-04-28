@@ -1,14 +1,15 @@
 import cgi
+import json
 import os
 import ssl
-import json
 from datetime import datetime
 from http import cookies
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
+from appointmentStorage import AppointmentStorage
 from dictAppointmentStorage import DictAppointmentStorage
 from header_token import make_token, check_token
-from passwordStorage import DictPasswordStorage
+from passwordStorage import DictPasswordStorage, PasswordDB
 
 passwordStorage = DictPasswordStorage()
 appointmentStorage = DictAppointmentStorage()
@@ -20,7 +21,7 @@ pages_dir = os.path.join(root, 'cat clinic')
 
 
 class CatClinicRequestHandler(BaseHTTPRequestHandler):
-    def send_message(self):
+    def send_message(self, message):
         pass
 
     def send_html(self, filename):
@@ -214,6 +215,7 @@ class CatClinicRequestHandler(BaseHTTPRequestHandler):
                 return
 
             success = appointmentStorage.reserve_time(doctor, user, date, time)
+            print(success, user, doctor, date, time)
             if not success:
                 self.send_response(200)
                 self.send_message('Selected time is unavailable')
@@ -251,8 +253,8 @@ class CatClinicServer:
         keyfile = os.path.join(root, 'key.pem')
         certfile = os.path.join(root, 'cert.pem')
         self.context.load_cert_chain(keyfile=keyfile,
-                                  certfile=certfile,
-                                  password=password)
+                                     certfile=certfile,
+                                     password=password)
         self.context.check_hostname = False
 
     def run(self):
@@ -265,6 +267,7 @@ class CatClinicServer:
 if __name__ == '__main__':
     passwordStorage = DictPasswordStorage()
     appointmentStorage = DictAppointmentStorage()
+
     port = 1642
     host = 'localhost'
     cat_server = CatClinicServer(host, port, 'Kitten')

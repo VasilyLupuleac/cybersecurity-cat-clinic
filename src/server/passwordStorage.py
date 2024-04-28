@@ -27,14 +27,12 @@ class DictPasswordStorage:
                 self.users[username] == hash_password(password))
 
 class PasswordDB:
-    def __init__(self):
-        db_user = input("username for postgres: ")
-        db_password = input("password for database: ")
+    def __init__(self, dbname, db_user, db_password):
         self.connection = psycopg.connect(
-            dbname="postgres",
+            dbname=dbname,
             user=db_user,
             password=db_password,
-            host="localhost",
+            host="127.0.0.1",
             autocommit=True
         )
         self.cursor = self.connection.cursor()
@@ -95,7 +93,3 @@ class PasswordDB:
         fetched_pwd = self.cursor.execute(check_pwd, prepare=True).fetchone()
         if fetched_pwd == str(hash_password(password).hexdigest()):
             return True
-
-
-if __name__ == '__main__':
-    password_db = PasswordDB()

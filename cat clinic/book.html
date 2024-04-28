@@ -29,6 +29,7 @@
         }
 
 
+
     </style>
 
 </head>
@@ -55,6 +56,7 @@
                         document.getElementById("username").innerHTML = sessionStorage.getItem("username");
 
 
+
             </script>
             <a href="/logout">
                 <button class="btn">Logout</button>
@@ -68,14 +70,14 @@
                     <h2>Book an appointment</h2>
                     <form id="book" action="/book" method="POST">
                         <div class="form-group">
-                            <label for="book">Appointment date</label>
+                            <label for="date">Appointment date</label>
 
                             <input type="date" id="date" name="date">
                         </div>
                         <br>
                         <div class="form-group">
                             <label for="doctor">Doctor</label>
-                            <select id="doctor" name="Doctors">
+                            <select id="doctor" name="doctor">
                                 <option value="Miruna Gherasim">Miruna Gherasim, Surgeon</option>
                                 <option value="Vasilii Lupuliak">Vasilii Lupuliak, Speech therapist</option>
                                 <option value="Melinda Pozna">Melinda Pozna, Psychologist</option>
@@ -102,7 +104,7 @@
 </div>
 <script>
     const timeList = document.getElementById("time-list");
-    document.getElementById('book').addEventListener('submit', function(event) {
+		document.getElementById('book').addEventListener('submit', function(event) {
         timeList.innerHTML = ""; // Clear previous list
         event.preventDefault();
         const formData = new FormData();
@@ -112,60 +114,54 @@
         let doctor = document.getElementById('doctor').value;
         sessionStorage.setItem('doctor', doctor);
         formData.append('doctor', doctor);
-
+        console.log(formData);
         // Send the form data to the server
         fetch('/book', {
             headers: {'Accept' : 'application/json'},
             method: 'POST',
             body: formData
         }).then(response => response.json())
-          .then((data) => {
-              if (data.success) {
-                  data.times.forEach(time => {
-                      const listItem = document.createElement("li");
-                      const button = document.createElement("button");
-                      button.textContent = "Book";
-                      button.onclick = function() {
-                            reserveTime(time)
-                      };
-                      listItem.textContent = time + " ";
-                      listItem.appendChild(button);
-                      timeList.appendChild(listItem);
-                  });
-              } else {
-                  // Display an error message
-                  timeList.textContent = data.error;
-              }
-          })
-          .catch(error => {
-              console.error('Error:', error);
-	});});
-          function reserveTime(time) {
-    const jsonResponse = {
-        'date': sessionStorage.getItem('date'),
-        'time': time,
-        'doctor': sessionStorage.getItem('doctor')
-    };
+			.then(times => {
+				console.log(times);
+				times.forEach(time => {
+                    const listItem = document.createElement("li");
+                    const button = document.createElement("button");
+                    button.textContent = "Book";
+                    button.onclick = function() {
+                        reserveTime(time);
+                    };
+                    listItem.textContent = time + " ";
+                    listItem.appendChild(button);
+                    timeList.appendChild(listItem);
+				});
+			});
+		});
+        function reserveTime(time) {
+            const jsonResponse = {
+                'date': sessionStorage.getItem('date'),
+                'time': time,
+                'doctor': sessionStorage.getItem('doctor')
+            };
 
-    fetch('/reserve', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(jsonResponse)
-    })
-    .then(response => response.status).
-    then(code => {
-        if (code == 201) {
-            window.href('/appointments');
-        }
-        else alert('Couldn't reserve an appointment');
-    )
-    .catch(error => {
-        console.error('Error:', error);
-    });
-}
-
+            fetch('/reserve', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(jsonResponse)
+            })
+            .then(response => response.status).
+            then(code => {
+                if (code == 201) {
+                    window.location.href = '/appointments';
+                }
+                else alert("Couldn't reserve an appointment");
+            }
+            )
+            .catch(error => {
+                console.error('Error:', error);
+            });
+		}
 </script>
 </body>
 </html>

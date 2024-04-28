@@ -1,5 +1,3 @@
-
-
 class Appointment:
     def __init__(self, user, doctor, date, slot):
         self.user = user
@@ -25,10 +23,15 @@ class DictAppointmentStorage:
         return sorted(list(map(map_func, filter(filter_func, self.appointments))))
 
     def reserve_time(self, doctor, user, date, time):
+        print(self.appointments)
         slot = self.slot_by_time[time]
-        filter(lambda a: a.doctor == doctor and a.date == date and a.slot == slot,
-               self.appointments)  # TODO
+        if list(filter(lambda a: a.doctor == doctor and
+                            a.date == date and
+                            a.slot == slot,
+                  self.appointments)):
+            return False
         self.appointments.append(Appointment(user=user, doctor=doctor, date=date, slot=slot))
+        return True
 
     def date_is_available(self, doctor, date):
         apts = self.select(lambda a: (a.doctor == doctor and
@@ -37,8 +40,8 @@ class DictAppointmentStorage:
         return len(apts) < len(self.slots)
 
     def get_user_appointments(self, user):
-        return self.select(lambda a: a.user == user, self.appointments,
-                           lambda a: (a.date, self.slots[a.slot]))
+        return self.select(lambda a: a.user == user,
+                           lambda a: (a.date, self.slots[a.slot], a.doctor))
 
     def get_appointments_day(self, doctor, day):
         day_appointments = self.select(lambda a: a.date == day and a.doctor == doctor,

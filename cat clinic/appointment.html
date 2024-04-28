@@ -9,30 +9,35 @@
             font-weight: bold;
             color: black; /* Default color */
             margin-bottom: 10px;
+            float: left;
+            clear: left;
+            display:block;
         }
     </style>
     <script>
         function displayAppointments() {
             const timeList = document.getElementById("time-list");
-            timeList.innerHTML = ""; // Clear previous list
+            timeList.innerHTML = "";
 
             fetch('/appointments', {
                     method: 'POST',
                     body: {}
                 }).then(response => response.json()
-                ).then((apts) =>
-                apts.foreach((apt) =>
-					const listItem = document.createElement("li");
-                    listItem.textContent = apt["date"] " " + apt["time"] + " " + apt["doctor"];
-                    timeList.appendChild(listItem);
+                ).then(apts =>
+					apts.forEach(apt => {
+						const listItem = document.createElement("li");
+						listItem.textContent = apt["date"] + " " + apt["time"] + " " + apt["doctor"];
+						timeList.appendChild(listItem);
+					}
                 )).catch(error => {
                     console.error('Error:', error);
                 });
  }
 
+
     </script>
 </head>
-<body>
+<body onload=displayAppointments()>
 <div class="main">
     <div class="navbar">
         <div class="icon">
