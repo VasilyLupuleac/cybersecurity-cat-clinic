@@ -1,6 +1,7 @@
 import cgi
 import os
 import ssl
+import json
 from http import cookies
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
@@ -55,7 +56,8 @@ class CatClinicRequestHandler(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(css)
             return
-        images = ['1.jpg', 'pusheen_happy.jpg', 'pusheen_mid.jpg', 'pusheen_sad.jpg'] + [f'doctor{i}.jpg' for i in range(1, 5)]
+        images = ['1.jpg', 'pusheen_happy.jpg', 'pusheen_mid.jpg', 'pusheen_sad.jpg'] + [f'doctor{i}.jpg' for i in
+                                                                                         range(1, 5)]
         if page in images:
             filename = os.path.join(pages_dir, page)
             with open(filename, 'rb') as file:
@@ -83,19 +85,29 @@ class CatClinicRequestHandler(BaseHTTPRequestHandler):
             self.send_html('register.html')
 
         elif page == 'contact':
-            user = self.check_auth ()
+            user = self.check_auth()
             if not user:
-                self.send_response ( 200 )
-                self.send_html ( 'contact_new.html' )
+                self.send_response(200)
+                self.send_html('contact_new.html')
                 return
-            self.send_response ( 200 )
-            self.send_html ( 'contact.html' )
-
+            self.send_response(200)
+            self.send_html('contact.html')
 
         elif page == 'book':
+            user = self.check_auth()
+            if not user:
+                self.send_response(401)
+                self.end_headers()
+                return
             self.send_response(200)
             self.send_html('bookapp.html')
+
         elif page == 'appointments':
+            user = self.check_auth()
+            if not user:
+                self.send_response(401)
+                self.end_headers()
+                return
             self.send_response(200)
             self.send_html('appointment.html')
 
@@ -169,8 +181,39 @@ class CatClinicRequestHandler(BaseHTTPRequestHandler):
                 self.end_headers()
                 return
 
-            # TODO
+            date = '2024-02-03'  # TODO change
+            doctor = 'Vasilii Lupuliak'
+            time = '11:30'
+
+            if not appointmentStorage.check_doctor(doctor):
+                self.send_response(400)
+                self.end_headers()
+                return
+
+            success = appointmentStorage.reserve_time(doctor, user, date, time)
+            if not success:
+                self.send_response(200)
+                self.send_message('Selected time is unavailable')
+                self.end_headers()
+            else:
+                self.send_response(201)
+                self.send_header('Location', '/home')
+                self.end_headers()
+
+        elif page == 'appointments':
+            user = self.check_auth()
+            if not user:
+                self.send_response(401)
+                self.end_headers()
+                return
+
+            apts = appointmentStorage.get_user_appointments(user)
+            apts = [{'date': date, 'time': time, 'doctor': doctor} for date, time, doctor in apts]
+            apts_json = json.dumps(apts)
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json')
             self.end_headers()
+            self.wfile.write(apts_json.encode(encoding='utf_8'))
 
         else:
             self.send_response(404)
@@ -196,7 +239,7 @@ class CatClinicServer:
         context.check_hostname = False
 
         server.socket = context.wrap_socket(server.socket, server_side=True)
-        print(f'Server running on port {self.port}...')
+        print(f'Server running at https://{self.host}:{self.port}')
         server.serve_forever()
 
 
