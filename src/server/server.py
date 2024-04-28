@@ -57,7 +57,7 @@ class CatClinicRequestHandler(BaseHTTPRequestHandler):
             self.wfile.write(css)
             return
 
-        if page in ['1.jpg', 'pusheeen_happy.jpg', 'pusheeen_mid.jpg', 'pusheeen_sad.jpg']:
+        if page in ['1.jpg', 'pusheen_happy.jpg', 'pusheen_mid.jpg', 'pusheen_sad.jpg']:
             filename = os.path.join(self.pages_dir, page)
             with open(filename, 'rb') as file:
                 jpg = file.read()
@@ -115,7 +115,7 @@ class CatClinicRequestHandler(BaseHTTPRequestHandler):
             form_data = cgi.FieldStorage(fp=self.rfile, headers=self.headers, environ={'REQUEST_METHOD': 'POST'})
             username = form_data.getvalue('username').strip()
             password = form_data.getvalue('password').strip()
-            user_exists = storage.check(username, password)
+            user_exists = passwordStorage.check(username, password)
             if not user_exists:
                 self.send_response(403)  # TODO change
                 self.end_headers()
@@ -144,7 +144,7 @@ class CatClinicRequestHandler(BaseHTTPRequestHandler):
 
                 if str(password) == str(confirm_pwd):
                     # TODO adding user to the password storage and checking if the user already exist
-                    if storage.add(username, password):
+                    if passwordStorage.add(username, password):
                         self.send_response(201)  # Created (redirect)
                         self.send_header('Location', '/login')  # Redirect to login page
                         self.end_headers()
@@ -197,7 +197,7 @@ class CatClinicServer:
 
 
 if __name__ == '__main__':
-    storage = DictPasswordStorage()
+    passwordStorage = DictPasswordStorage()
     appointmentStorage = DictAppointmentStorage()
     port = 1642
     host = 'localhost'
