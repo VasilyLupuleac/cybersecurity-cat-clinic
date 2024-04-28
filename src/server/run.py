@@ -1,4 +1,5 @@
 from tkinter import *
+from server import CatClinicServer
 
 password = ''
 db_params = None
@@ -15,8 +16,22 @@ def launch_password_window():
 
     def get_password():
         global password
+
         password = pass_entry.get()
-        launch_db_window()
+        global server
+        try:
+            server = CatClinicServer()
+            launch_db_window()
+        except:
+            #top = Toplevel(pass_window)
+            #Label(top, text="Wrong password")
+
+            top = Toplevel(pass_window)
+            top.geometry("750x250")
+            top.title("Child Window")
+            label = Label(top, text="Wrong password", font=('Arial 18')).place(x=150, y=80)
+            okbutton = Button(top, text="Ok", command=launch_password_window)
+            okbutton.grid(padx=10, sticky=E)
 
     button = Button(pass_window, text="Ok", command=get_password)
     button.grid(padx=10, sticky=E)
@@ -59,3 +74,5 @@ def launch_db_window():
 
     db_cancel_button = Button(db_window, text='Cancel', command=cancel)
     db_cancel_button.grid(row=5, column=0, padx=10, sticky=W)
+
+launch_password_window()

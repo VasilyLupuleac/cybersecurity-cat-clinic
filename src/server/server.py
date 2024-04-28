@@ -221,22 +221,20 @@ class CatClinicRequestHandler(BaseHTTPRequestHandler):
 
 
 class CatClinicServer:
-    def __init__(self, host, port):
+    def __init__(self, host, port, password):
         self.host = host
         self.port = port
+        self.context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+        keyfile = os.path.join(root, 'key.pem')
+        certfile = os.path.join(root, 'cert.pem')
+        self.context.load_cert_chain(keyfile=keyfile,
+                                  certfile=certfile,
+                                  password=password)
+        self.context.check_hostname = False
 
     def run(self):
         server = HTTPServer((self.host, self.port), CatClinicRequestHandler)
-        context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-        pass_filename = os.path.join(root, 'pass.txt')
-        with open(pass_filename, 'r') as pass_file:
-            password = pass_file.readline().strip()
-        keyfile = os.path.join(root, 'key.pem')
-        certfile = os.path.join(root, 'cert.pem')
-        context.load_cert_chain(keyfile=keyfile,
-                                certfile=certfile,
-                                password=password)
-        context.check_hostname = False
+
 
         server.socket = context.wrap_socket(server.socket, server_side=True)
         print(f'Server running at https://{self.host}:{self.port}')
