@@ -18,7 +18,6 @@ pages_dir = os.path.join(root, 'cat clinic')
 
 
 class CatClinicRequestHandler(BaseHTTPRequestHandler):
-
     def send_message(self):
         pass
 
@@ -56,8 +55,8 @@ class CatClinicRequestHandler(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(css)
             return
-
-        if page in ['1.jpg', 'pusheen_happy.jpg', 'pusheen_mid.jpg', 'pusheen_sad.jpg']:
+        images = ['1.jpg', 'pusheen_happy.jpg', 'pusheen_mid.jpg', 'pusheen_sad.jpg'] + [f'doctor{i}.jpg' for i in range(1, 5)]
+        if page in images:
             filename = os.path.join(pages_dir, page)
             with open(filename, 'rb') as file:
                 jpg = file.read()
