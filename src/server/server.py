@@ -71,26 +71,23 @@ class CatClinicRequestHandler(BaseHTTPRequestHandler):
                 self.send_html('newusers.html')
                 return
             self.send_response(200)
-            self.end_headers()
-            self.wfile.write(f'Welcome to the clinic, {user}!'.encode('utf-8'))
+            self.send_html('index.html')
 
         elif page == 'login':
             self.send_response(200)
-            html_content = self.get_html('login.html')
-            self.send_header('Content-type', 'text/html')
-            self.end_headers()
-            self.wfile.write(html_content)
+            self.send_html('login.html')
 
         elif page == 'register':
             self.send_response(200)
             self.send_html('register.html')
 
+        elif page == 'contact':
+            self.send_response(200)
+            self.send_html('contact.html')
+
         elif page == 'book':
             self.send_response(200)
-            html_content = self.get_html('bookapp.html')
-            self.send_header('Content-type', 'text/html')
-            self.end_headers()
-            self.wfile.write(html_content)
+            self.send_html('bookapp.html')
         elif page == 'appointments':
             self.send_response(200)
             self.send_html('appointment.html')

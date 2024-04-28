@@ -90,7 +90,8 @@
         document.getElementById('login').addEventListener('submit', function(event) {
             event.preventDefault(); // Prevent the default form submission
             const formData = new FormData();
-            formData.append('username', document.getElementById('username').value);
+            let username = document.getElementById('username').value
+            formData.append('username', username);
             formData.append('password', document.getElementById('password').value);
             // Send the form data to the server
             fetch('/login', {
@@ -99,8 +100,8 @@
             }).then(response => {
                 // Handle response if needed
                 if(response.ok) {
-                    sessionStorage.setItem('token', response.text());
-                    fetch()
+                    sessionStorage.setItem("username", username)
+                    window.location.href = '/home';
                 }
             }).catch(error => {
                 // Handle error if needed
