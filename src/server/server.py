@@ -6,13 +6,15 @@ from datetime import datetime
 from http import cookies
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
+from startup_gui import *
 from appointmentStorage import AppointmentStorage
 from dictAppointmentStorage import DictAppointmentStorage
-from header_token import make_token, check_token
+from header_token import TokenGenerator
 from passwordStorage import DictPasswordStorage, PasswordDB
 
-passwordStorage = DictPasswordStorage()
-appointmentStorage = DictAppointmentStorage()
+passwordStorage = None
+appointmentStorage = None
+tokenGenerator = TokenGenerator()
 
 current_dir = os.path.dirname(os.path.realpath(__file__))
 parent_dir = os.path.join(current_dir, os.pardir)
@@ -40,7 +42,7 @@ class CatClinicRequestHandler(BaseHTTPRequestHandler):
         if 'token' not in cookie:
             return False
         token = cookie['token'].value
-        return check_token(token)
+        return tokenGenerator.check_token(token)
 
     def do_GET(self):
         page = self.path.split('/')[1]
@@ -49,8 +51,8 @@ class CatClinicRequestHandler(BaseHTTPRequestHandler):
             self.send_header('Location', '/home')
             self.end_headers()
             return
-        if page == 'style.css':
-            filename = os.path.join(pages_dir, 'style.css')
+        if page in ['pwdstyle.css', 'style.css']:
+            filename = os.path.join(pages_dir, page)
             with open(filename, 'rb') as file:
                 css = file.read()
             self.send_response(200)
@@ -140,7 +142,7 @@ class CatClinicRequestHandler(BaseHTTPRequestHandler):
                 self.end_headers()
                 self.send_message('Please check provided information')  # TODO change to HTML page
                 return
-            token = make_token(username)
+            token = tokenGenerator.make_token(username)
             cookie = cookies.SimpleCookie()
             cookie_name = 'token'
             cookie[cookie_name] = token
@@ -265,10 +267,37 @@ class CatClinicServer:
 
 
 if __name__ == '__main__':
-    passwordStorage = DictPasswordStorage()
-    appointmentStorage = DictAppointmentStorage()
-
     port = 1642
     host = 'localhost'
-    cat_server = CatClinicServer(host, port, 'Kitten')
+
+    db_params = launch_db_window()
+    if not db_params:
+        passwordStorage = DictPasswordStorage()
+        appointmentStorage = DictAppointmentStorage()
+        db_error()
+    else:
+        try:
+            db_name, db_user, db_pass = db_params
+            passwordStorage = PasswordDB(db_name, db_user, db_pass)
+            appointmentStorage = AppointmentStorage(db_name, db_user, db_pass)
+            db_ok()
+        except:
+            passwordStorage = DictPasswordStorage()
+            appointmentStorage = DictAppointmentStorage()
+            db_error()
+
+    password = launch_password_window()
+    cat_server = None
+    try:
+        cat_server = CatClinicServer(host, port, password)
+    except:
+        pass
+
+    while not cat_server:
+        try:
+            password = relaunch_password()
+            cat_server = CatClinicServer(host, port, password)
+        except:
+            pass
+    password_ok(port)
     cat_server.run()

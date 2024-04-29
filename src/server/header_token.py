@@ -1,30 +1,31 @@
 from datetime import datetime, timedelta
-
+import secrets
 import jwt
 
-secret = "Secret"  # TODO change
 
+class TokenGenerator:
+    def __init__(self):
+        self._secret = secrets.token_urlsafe()
 
-def make_token(username):
-    expiration = datetime.now() + timedelta(hours=1)
-    payload = {
-        'user': username,
-        'expiration': expiration.timestamp()
-        # TODO more fields idk
-    }
-    token = jwt.encode(payload=payload, key=secret, algorithm="HS256")
-    return token
+    def make_token(self, username):
+        expiration = datetime.now() + timedelta(hours=1)
+        payload = {
+            'user': username,
+            'expiration': expiration.timestamp()
+            # TODO more fields idk
+        }
+        token = jwt.encode(payload=payload, key=self._secret, algorithm="HS256")
+        return token
 
-
-def check_token(token):
-    try:
-        payload = jwt.decode(token, key=secret, algorithms="HS256")
-        user = payload['user']
-        expiration = payload['expiration']
-        if datetime.now().timestamp() > expiration:
+    def check_token(self, token):
+        try:
+            payload = jwt.decode(token, key=self._secret, algorithms="HS256")
+            user = payload['user']
+            expiration = payload['expiration']
+            if datetime.now().timestamp() > expiration:
+                return False
+            return user
+        except Exception:
             return False
-        return user
-    except Exception:
-        # print('Invalid signature')
-        return False
+
 
