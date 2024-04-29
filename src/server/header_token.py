@@ -12,7 +12,6 @@ class TokenGenerator:
         payload = {
             'user': username,
             'expiration': expiration.timestamp()
-            # TODO more fields idk
         }
         token = jwt.encode(payload=payload, key=self._secret, algorithm="HS256")
         return token

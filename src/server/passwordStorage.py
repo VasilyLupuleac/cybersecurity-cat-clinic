@@ -7,8 +7,7 @@ def hash_password(password):
 
 class DictPasswordStorage:
     def __init__(self):
-        self.users = {'admin': hash_password('admin')}
-        # TODO change
+        self.users = {}
 
     def add(self, username, password):
         if username in self.users:
