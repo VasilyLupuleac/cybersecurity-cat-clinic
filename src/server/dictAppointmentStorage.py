@@ -10,7 +10,7 @@ class DictAppointmentStorage:
     def __init__(self):
         self.appointments = []
         self.doctors = ['Vasilii Lupuliak', 'Melinda Pozna', 'Miruna Gherasim', 'Anuj Rathee']
-        times = ['09'] + list(map(str, range(10, 17)))
+        times = list(map(str, range(11, 17)))
         self.slots = [f'{x}:{y}' for x in times for y in ['00', '30']]
         self.slot_by_time = {}
         for slot, time in enumerate(self.slots):

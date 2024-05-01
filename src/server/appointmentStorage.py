@@ -112,7 +112,4 @@ class AppointmentStorage:
 
 
 if __name__ == '__main__':
-    appointments = AppointmentStorage ( 'cat_clinic', 'postgres', 'nghtwsh12')
-    print(appointments.get_appointments_day('Miruna Gherasim', '2022-01-01'))
-    print(appointments.silly("['10:00']"))
-    appointments.reserve_time("cat3", "Miruna Gherasim", "2000-01-01", "['10:00']")
+    appointments = AppointmentStorage ( 'cat_clinic', 'postgres', '')

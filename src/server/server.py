@@ -279,7 +279,7 @@ if __name__ == '__main__':
         try:
             db_name, db_user, db_pass = db_params
             passwordStorage = PasswordDB(db_name, db_user, db_pass)
-            appointmentStorage = AppointmentStorage(db_name, db_user, db_pass)
+            appointmentStorage = DictAppointmentStorage()
             db_ok()
         except:
             passwordStorage = DictPasswordStorage()

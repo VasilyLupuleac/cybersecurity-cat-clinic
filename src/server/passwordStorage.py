@@ -100,6 +100,4 @@ class PasswordDB:
             return True
 
 if __name__ == '__main__':
-    db = PasswordDB("cat_clinic", "postgres", "nghtwsh12")
-    #db.add("cat4", "Kitten1")
-    db.check("cat4", "Kitten1")
+    db = PasswordDB("cat_clinic", "postgres", "")
